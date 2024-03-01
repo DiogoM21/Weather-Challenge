@@ -3,7 +3,7 @@
 # Dependency and build directories
 .DS_Store
 node_modules
-/dist
+#/dist
 
 # Local env files
 .env.local

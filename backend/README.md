@@ -1,15 +1,15 @@
 # ✒️ Glartek Challenge
 
-Desafio Glartek FullStack ➔ LVL Junior
+Glartek Challenge FullStack ➔ LVL Junior
 
-## 📖 Comandos:
+## 📖 Commands:
 1. npm install ➔ Install packages.
 
 2. npx eslint . --fix ➔ Lint and format code.
 
 3. node src/server.js ➔ Start server.
 
-## 🧑 Participantes:
+## 🧑 Participants:
 * Diogo Mendes ➔ diiogomendes21@hotmail.com
 
 ## 🔧 Info:

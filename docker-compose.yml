@@ -1,0 +1,40 @@
+services:
+  # Database (MariaDB)
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: glartek-challenge
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: root
+    #volumes:
+    #  - "db.sql:/docker-entrypoint-initdb.d"
+
+  # PhpMyAdmin (PhpMyAdmin)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8082:80"
+    environment:
+      PMA_HOST: db
+
+  # Back-End (Node.js)
+  backend:
+    image: node
+    volumes:
+      - "./backend:/home/node/app"
+    port:
+      - "3000:3000"
+    working_dir: /home/node/app
+    command: "node src/server.js"
+    depends_on:
+      - db
+      - frontend
+
+  # Front-End (Vue.js)
+  frontend:
+    image: nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - "./frontend/dist:/usr/share/nginx/html"
