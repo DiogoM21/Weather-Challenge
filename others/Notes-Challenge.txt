@@ -1,0 +1,14 @@
+API ➔ 5-Days & 3-Hours:
+  Docs ➔ https://openweathermap.org/forecast5#cityid5
+  API ➔ https://api.openweathermap.org/data/2.5/forecast?id={CityID}&APPID={APIKEY}
+
+API ➔ Current:
+  Docs ➔ https://openweathermap.org/current#cityid
+  API ➔ https://api.openweathermap.org/data/2.5/weather?id={CityID}&appid={APIKEY}
+
+Cities:
+  Lisboa ➔ 2267056
+  Leira ➔ 2267094
+  Coimbra ➔ 2740636
+  Porto ➔ 2735941
+  Faro ➔ 2268337

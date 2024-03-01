@@ -14,7 +14,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
-      - "8082:80"
+      - "8081:80"
     environment:
       PMA_HOST: db
 
@@ -23,7 +23,7 @@ services:
     image: node
     volumes:
       - "./backend:/home/node/app"
-    port:
+    ports:
       - "3000:3000"
     working_dir: /home/node/app
     command: "node src/server.js"

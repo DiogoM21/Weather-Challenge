@@ -3,6 +3,7 @@
 Glartek Challenge FullStack ➔ LVL Junior
 
 ## 📖 Notes:
+
 1. Back-End with Node.js (API REST) to consult city weather [external API](https://openweathermap.org/).
 
 2. Front-End with Vue.js (Dashboard) with weather information.
@@ -17,10 +18,20 @@ Glartek Challenge FullStack ➔ LVL Junior
 
 4. Ready to Start ➔ Front-End build (dist) already included in git.
 
+## 📡 URLs:
+
+1. Front-End ➔ http://localhost:8080/
+
+2. Back-End ➔ http://localhost:3000/
+
+3. phpMyAdmin (credentials: admin / root) ➔ http://localhost:8081/
+
 ## 🧑 Participants:
-* Diogo Mendes ➔ diiogomendes21@hotmail.com
+
+- Diogo Mendes ➔ diiogomendes21@hotmail.com
 
 ## 🔧 Info:
+
 © Diogo Mendes ➔ 2024
 
 Node.js & Vue.js
