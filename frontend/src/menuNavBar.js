@@ -18,9 +18,9 @@ export default [
     },
     {
         icon: mdiTemperatureCelsius,
-        label: 'Page',
-        labelPT: 'Página',
-        route: 'page',
+        label: 'API',
+        labelPT: 'API',
+        href: 'https://openweathermap.org/',
     },
     {
         icon: mdiThemeLightDark,

@@ -11,15 +11,6 @@ const routes = [
         component: () => import('../views/HomeView.vue'),
     },
     {
-        meta: {
-            title: 'Page',
-            titlePT: 'Página',
-        },
-        path: '/page',
-        name: 'page',
-        component: () => import('../views/PageView.vue'),
-    },
-    {
         path: '/:pathMatch(.*)*',
         redirect: '/',
     },

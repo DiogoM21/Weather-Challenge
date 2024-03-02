@@ -29,7 +29,7 @@ watch(
 
 <template>
     <CardBox :updated="weather?.info.dt">
-        <div class="flex flex-row items-center gap-4">
+        <div class="flex flex-row items-center gap-4 text-gray-900 dark:text-white">
             <div class="mx-2">
                 <img
                     :src="
@@ -56,7 +56,7 @@ watch(
                         :path="mdiReload"
                         :size="24"
                         :title="mainStore.lang === 'pt' ? 'Atualizar' : 'Refresh'"
-                        class="mt-1 hover:text-sky-700 text-gray-800 dark:text-white dark:hover:text-sky-500 cursor-pointer transition-colors"
+                        class="mt-1 hover:text-blue-900 dark:hover:text-sky-500 cursor-pointer transition-colors"
                         @click="getCurrentWeather"
                     />
                 </div>

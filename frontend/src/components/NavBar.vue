@@ -28,14 +28,18 @@ const menuClick = (item) => {
 </script>
 
 <template>
-    <nav class="top-0 inset-x-0 fixed h-14 z-30 transition-position w-screen bg-gray-50 dark:bg-slate-800 shadow-md">
+    <nav
+        class="top-0 inset-x-0 fixed h-14 z-30 transition-position w-screen shadow-md bg-blue-300/90 dark:bg-gray-800/90"
+    >
         <div class="grid justify-items-center grid-cols-6 gap-4 max-w-7xl mx-auto h-full">
             <div v-for="item in menu" :key="item.label">
                 <component
-                    :is="item.route ? RouterLink : 'div'"
+                    :is="item.route ? RouterLink : item.href ? 'a' : 'div'"
                     :to="item.route"
+                    :href="item.href"
                     :title="isLangPT ? item.labelPT || item.hoverPT : item.label || item.hover"
-                    class="flex items-center h-14 px-2 transition-colors hover:text-sky-700 text-gray-800 dark:text-white dark:hover:text-sky-500 cursor-pointer"
+                    class="flex items-center h-14 px-2 transition-colors text-gray-900 hover:text-blue-900 dark:text-white dark:hover:text-sky-500 cursor-pointer"
+                    target="_blank"
                     @click="item.route ? null : menuClick(item)"
                 >
                     <BaseIcon :path="item.icon" />

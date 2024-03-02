@@ -4,7 +4,7 @@ import { forceDocumentTitle } from '@/main.js';
 
 export const useMainStore = defineStore('main', () => {
     // Website theme
-    const darkMode = ref(false);
+    const darkMode = ref(true);
 
     // Website language
     const lang = ref('pt');
