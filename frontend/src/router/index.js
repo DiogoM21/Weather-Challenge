@@ -4,6 +4,7 @@ const routes = [
     {
         meta: {
             title: 'Home',
+            titlePT: 'Início',
         },
         path: '/',
         name: 'home',
@@ -11,11 +12,12 @@ const routes = [
     },
     {
         meta: {
-            title: 'Test',
+            title: 'Page',
+            titlePT: 'Página',
         },
-        path: '/test',
-        name: 'test',
-        component: () => import('../views/TestView.vue'),
+        path: '/page',
+        name: 'page',
+        component: () => import('../views/PageView.vue'),
     },
     {
         path: '/:pathMatch(.*)*',

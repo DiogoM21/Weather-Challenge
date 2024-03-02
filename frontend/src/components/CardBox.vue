@@ -12,7 +12,7 @@ const emit = defineEmits(['submit']);
 <template>
     <component
         :is="isForm ? 'form' : 'div'"
-        class="flex items-center justify-center rounded-2xl py-4 my-4 mx-24 2xl:mx-48 bg-white dark:bg-slate-900/70 shadow-md"
+        class="flex items-center justify-center rounded-2xl py-6 my-4 mx-12 md:mx-28 2xl:mx-64 bg-white dark:bg-slate-900/70 shadow-md"
         @submit="emit('submit')"
     >
         <slot />
