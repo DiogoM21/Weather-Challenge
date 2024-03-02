@@ -1,9 +1,15 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
+
+// Environment variables
 require('dotenv').config();
 
 // Environment variables
 const port = process.env.PORT;
+
+// Middleware
+app.use(cors());
 
 // Controllers
 const homeController = require('./controllers/home');

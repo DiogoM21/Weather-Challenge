@@ -1,14 +1,23 @@
 <script setup>
 import NavBar from './NavBar.vue';
+import LogoBar from './LogoBar.vue';
 import FooterBar from './FooterBar.vue';
+import { useMainStore } from '@/stores/main.js';
+
+const mainStore = useMainStore();
 </script>
 
 <template>
-    <div
-        class="min-h-screen flex flex-col pt-14 w-auto bg-gray-300/70 dark:bg-slate-900/90 dark:text-slate-100 selection:bg-slate-800 selection:text-slate-100 dark:selection:bg-slate-100 dark:selection:text-slate-900"
-    >
-        <NavBar />
-        <slot class="flex-grow" />
-        <FooterBar />
+    <div :class="{ dark: mainStore.darkMode }">
+        <div
+            class="flex flex-col pt-14 min-h-screen w-screen transition-position lg:w-auto bg-gray-300/70 dark:bg-slate-900/90 dark:text-slate-100 selection:bg-slate-800 selection:text-slate-100 dark:selection:bg-slate-100 dark:selection:text-slate-900"
+        >
+            <div class="flex-grow">
+                <NavBar />
+                <LogoBar />
+                <slot />
+            </div>
+            <FooterBar />
+        </div>
     </div>
 </template>
