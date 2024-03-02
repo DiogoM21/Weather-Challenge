@@ -10,18 +10,18 @@ const $toast = useToast();
 // Back-End API URL
 const backendUrl = 'http://localhost:3000';
 
-// Weather units
-const units = ref('metric');
+// Weather unit
+const unit = ref('metric');
 
 // Current weather
 const weather = ref(null);
 
 export const useWeatherStore = defineStore('weather', () => {
     // Get current weather form city
-    async function getCurrentWeather(cityId, units, lang) {
+    async function getCurrentWeather(cityId, unit, lang) {
         $toast.clear();
         try {
-            const apiResponse = await axios.get(`${backendUrl}/cities/${cityId}/current?units=${units}&lang=${lang}`);
+            const apiResponse = await axios.get(`${backendUrl}/cities/${cityId}/current?units=${unit}&lang=${lang}`);
             return (weather.value = apiResponse.data);
         } catch (error) {
             switch (mainStore.lang) {
@@ -37,7 +37,7 @@ export const useWeatherStore = defineStore('weather', () => {
     }
 
     return {
-        units,
+        unit,
         getCurrentWeather,
     };
 });
