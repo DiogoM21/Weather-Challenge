@@ -34,8 +34,10 @@ router.get('/', (req, res) => {
 });
 
 // Current weather route
-router.get('/:id/current', async (req, res) => {
+router.get('/:id/current', (req, res) => {
     const cityId = req.params.id;
+    const units = req.query.units || 'metric';
+    const lang = req.query.lang || 'en';
 
     // Validate cityId
     const validation = validateCityId(cityId);
@@ -43,7 +45,7 @@ router.get('/:id/current', async (req, res) => {
         return res.status(400).json(validation);
     }
 
-    return weatherController.getCurrentWeather(cityId, res);
+    return weatherController.getCurrentWeather(cityId, units, lang, res);
 });
 
 module.exports = router;

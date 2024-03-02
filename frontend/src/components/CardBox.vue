@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps, defineEmits, useSlots, computed } from 'vue';
 
 defineProps({
     isForm: Boolean,
@@ -7,14 +7,21 @@ defineProps({
 });
 
 const emit = defineEmits(['submit']);
+
+const slots = useSlots();
+
+const hasFooter = computed(() => slots.footer && !!slots.footer());
 </script>
 
 <template>
     <component
         :is="isForm ? 'form' : 'div'"
-        class="flex items-center justify-center rounded-2xl py-6 my-4 mx-12 md:mx-28 2xl:mx-64 bg-white dark:bg-slate-900/70 shadow-md"
+        class="flex flex-col items-center justify-center rounded-2xl py-4 my-4 mx-12 md:mx-28 2xl:mx-64 bg-white dark:bg-slate-900/70 shadow-md"
         @submit="emit('submit')"
     >
         <slot />
+        <footer v-if="hasFooter" class="px-6 py-2 w-full">
+            <slot name="footer" />
+        </footer>
     </component>
 </template>
