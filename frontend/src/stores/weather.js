@@ -21,7 +21,7 @@ export const useWeatherStore = defineStore('weather', () => {
     async function getCurrentWeather(cityId, unit, lang) {
         $toast.clear();
         try {
-            const apiResponse = await axios.get(`${backendUrl}/cities/${cityId}/current?units=${unit}&lang=${lang}`);
+            const apiResponse = await axios.get(`${backendUrl}/cities/${cityId}/current?unit=${unit}&lang=${lang}`);
             return (weather.value = apiResponse.data);
         } catch (error) {
             switch (mainStore.lang) {

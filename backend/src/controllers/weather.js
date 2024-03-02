@@ -6,15 +6,17 @@ const weatherApiUrl = process.env.WEATHER_API_URL;
 const weatherApiKey = process.env.WEATHER_API_KEY;
 
 // Current weather method
-async function getCurrentWeather(cityId, units, lang, res) {
+async function getCurrentWeather(cityId, unit, lang, res) {
     try {
         const externalApiResponse = await axios.get(
-            `${weatherApiUrl}/weather?id=${cityId}&appid=${weatherApiKey}&units=${units}&lang=${lang}`,
+            `${weatherApiUrl}/weather?id=${cityId}&appid=${weatherApiKey}&units=${unit}&lang=${lang}`,
         );
         return res.json({
             values: {
                 temp: externalApiResponse.data.main.temp,
                 humidity: externalApiResponse.data.main.humidity,
+                wind: externalApiResponse.data.wind.speed,
+                deg: externalApiResponse.data.wind.deg,
             },
             info: {
                 description:

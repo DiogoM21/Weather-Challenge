@@ -27,40 +27,62 @@ const selectCities = [
 ];
 
 const selectedCity = ref('2267094');
-const selectedUnit = ref('metric');
+const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.unit).value);
 
 async function getCurrentWeather() {
-    weather.value = await weatherStore.getCurrentWeather('2267094', weatherStore.unit, mainStore.lang);
+    weather.value = await weatherStore.getCurrentWeather(selectedCity.value, selectedUnit.value, mainStore.lang);
 }
 
 onMounted(async () => {
     await getCurrentWeather();
 });
 
-watch(
-    () => mainStore.lang,
-    async () => {
-        await getCurrentWeather();
-    },
-);
+watch([() => mainStore.lang, () => selectedCity.value, () => selectedUnit.value], async () => {
+    await getCurrentWeather();
+});
+
+function getUnitSymbol() {
+    switch (selectedUnit.value) {
+        case 'metric':
+            return '°C';
+        case 'default':
+            return 'K';
+        case 'imperial':
+            return '°F';
+        default:
+            return '°C';
+    }
+}
+
+function getWindSymbol() {
+    switch (selectedUnit.value) {
+        case 'imperial':
+            return 'mph';
+        case 'metric':
+        case 'default':
+            return 'm/s';
+        default:
+            return 'm/s';
+    }
+}
 </script>
 
 <template>
     <CardBox :updated="weather?.info.dt">
-        <div class="flex flex-row items-center my-5 justify-evenly w-full text-gray-900 dark:text-white">
+        <div class="flex flex-row items-center mt-5 justify-evenly w-full text-gray-900 dark:text-white">
             <div class="flex flex-col items-center gap-4 justify-center">
                 <FormField
                     v-model="selectedCity"
                     type="select"
                     :options="selectCities"
-                    label="Cidade:"
+                    :label="mainStore.lang === 'pt' ? 'Cidade:' : 'City:'"
                     :icon="mdiHomeCity"
                 />
                 <FormField
                     v-model="selectedUnit"
                     type="select"
                     :options="selectUnits"
-                    label="Unidade:"
+                    :label="mainStore.lang === 'pt' ? 'Unidade:' : 'Unit:'"
                     :icon="selectUnits.find((unit) => unit.value === selectedUnit).icon"
                 />
             </div>
@@ -79,13 +101,19 @@ watch(
                 </div>
                 <div>
                     <div class="flex flex-row items-center gap-4 justify-center">
-                        <span class="text-4xl">Leiria</span>
-                        <span class="text-4xl font-bold">{{ weather?.values.temp ?? 0 }}°C</span>
+                        <span class="text-4xl">{{
+                            selectCities.find((city) => city.value === selectedCity).label
+                        }}</span>
+                        <span class="text-4xl font-bold">{{ weather?.values.temp ?? 0 }}{{ getUnitSymbol() }}</span>
                     </div>
                     <div class="flex flex-row items-center gap-4 justify-center mt-4">
                         <span class="text-xl"
-                            >{{ mainStore.lang === 'pt' ? 'Humidade' : 'Humidity' }}:
-                            {{ weather?.values.humidity ?? 0 }}%</span
+                            >{{ mainStore.lang === 'pt' ? 'Vento' : 'Wind' }}: {{ weather?.values.wind ?? 0
+                            }}{{ getWindSymbol() }}</span
+                        >
+                        <span class="text-xl"
+                            >{{ mainStore.lang === 'pt' ? 'Direção' : 'Direction' }}:
+                            {{ weather?.values.deg ?? 0 }}°</span
                         >
                         <BaseIcon
                             :path="mdiReload"
@@ -94,6 +122,12 @@ watch(
                             class="mt-1 hover:text-blue-900 dark:hover:text-sky-500 cursor-pointer transition-colors"
                             @click="getCurrentWeather"
                         />
+                    </div>
+                    <div class="flex flex-row items-center gap-4 justify-center mt-4">
+                        <span class="text-xl"
+                            >{{ mainStore.lang === 'pt' ? 'Humidade' : 'Humidity' }}:
+                            {{ weather?.values.humidity ?? 0 }}%</span
+                        >
                     </div>
                 </div>
             </div>
