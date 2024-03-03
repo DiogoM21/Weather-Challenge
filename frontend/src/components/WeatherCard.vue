@@ -30,10 +30,15 @@ const selectCities = [
 const selectedCity = ref('2267094');
 const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.unit).value);
 
-async function getCurrentWeather() {
+async function getCurrentWeather(force = false) {
     isRefreshing.value = true;
     try {
-        weather.value = await weatherStore.getCurrentWeather(selectedCity.value, selectedUnit.value, mainStore.lang);
+        weather.value = await weatherStore.getCurrentWeather(
+            selectedCity.value,
+            selectedUnit.value,
+            mainStore.lang,
+            force,
+        );
     } finally {
         isRefreshing.value = false;
     }
@@ -121,19 +126,19 @@ function getWindSymbol() {
                             >{{ mainStore.lang === 'pt' ? 'Direção' : 'Direction' }}:
                             {{ weather?.values.deg ?? 0 }}°</span
                         >
-                        <BaseIcon
-                            :path="mdiReload"
-                            :size="24"
-                            :title="mainStore.lang === 'pt' ? 'Atualizar' : 'Refresh'"
-                            class="mt-1 hover:text-blue-900 dark:hover:text-sky-500 cursor-pointer transition-colors"
-                            @click="getCurrentWeather"
-                        />
                     </div>
                     <div class="flex flex-row items-center gap-4 justify-center mt-4">
                         <span class="text-xl"
                             >{{ mainStore.lang === 'pt' ? 'Humidade' : 'Humidity' }}:
                             {{ weather?.values.humidity ?? 0 }}%</span
                         >
+                        <BaseIcon
+                            :path="mdiReload"
+                            :size="24"
+                            :title="mainStore.lang === 'pt' ? 'Forçar atualização' : 'Force update'"
+                            class="mt-1 hover:text-blue-900 dark:hover:text-sky-500 cursor-pointer transition-colors"
+                            @click="getCurrentWeather(true)"
+                        />
                     </div>
                 </div>
             </div>

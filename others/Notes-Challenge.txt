@@ -5,7 +5,6 @@ API ➔ 5-Days & 3-Hours:
 API ➔ Current:
   Docs ➔ https://openweathermap.org/current#cityid
   API ➔ https://api.openweathermap.org/data/2.5/weather?id={CityID}&appid={APIKEY}
-  Important ➔ Values { Description, Icon, Wind Speed, Wind Deg } & Main { Temp, Humidity }
 
 Cities:
   Leiria ➔ 2267094

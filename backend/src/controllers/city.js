@@ -38,11 +38,20 @@ router.get('/:id/current', (req, res) => {
     const cityId = req.params.id;
     const unit = req.query.unit || 'metric';
     const lang = req.query.lang || 'en';
+    const force = req.query.force || false;
 
     // Validate cityId
-    const validation = validateCityId(cityId);
-    if (validation) {
-        return res.status(400).json(validation);
+    const invalid = validateCityId(cityId);
+    if (invalid) {
+        return res.status(400).json(invalid);
+    }
+
+    if (!force) {
+        // Check if city is already in storage
+        const storage = weatherController.checkStorage(cityId, unit, lang);
+        if (storage) {
+            return res.json(storage);
+        }
     }
 
     return weatherController.getCurrentWeather(cityId, unit, lang, res);

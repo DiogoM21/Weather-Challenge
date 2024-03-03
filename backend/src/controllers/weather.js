@@ -1,9 +1,15 @@
 const axios = require('axios');
 
 // Import environment variables
-const weatherApiName = process.env.WEATHER_API_NAME;
-const weatherApiUrl = process.env.WEATHER_API_URL;
-const weatherApiKey = process.env.WEATHER_API_KEY;
+const weatherApiName = 'OpenWeather';
+const weatherApiUrl = 'https://api.openweathermap.org/data/2.5';
+const weatherApiKey = '519af113678c353b1ae6ef8ce8c10803';
+
+// Check if city is already in storage
+function checkStorage(cityId, unit, lang) {
+    // TODO: Check if city is already in storage
+    return false;
+}
 
 // Current weather method
 async function getCurrentWeather(cityId, unit, lang, res) {
@@ -11,7 +17,7 @@ async function getCurrentWeather(cityId, unit, lang, res) {
         const externalApiResponse = await axios.get(
             `${weatherApiUrl}/weather?id=${cityId}&appid=${weatherApiKey}&units=${unit}&lang=${lang}`,
         );
-        return res.json({
+        const weather = res.json({
             values: {
                 temp: externalApiResponse.data.main.temp,
                 humidity: externalApiResponse.data.main.humidity,
@@ -33,6 +39,11 @@ async function getCurrentWeather(cityId, unit, lang, res) {
                 }).format(new Date(externalApiResponse.data.dt * 1000)),
             },
         });
+
+        // Save data to storage
+        // TODO: Save data to storage
+
+        return weather;
     } catch (error) {
         console.error(`Error fetching data from ${weatherApiName} API:`, error);
         return res.status(500).json({ error: `Error fetching data ${weatherApiName} API.` });
@@ -40,5 +51,6 @@ async function getCurrentWeather(cityId, unit, lang, res) {
 }
 
 module.exports = {
+    checkStorage,
     getCurrentWeather,
 };

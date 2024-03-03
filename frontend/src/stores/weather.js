@@ -54,18 +54,22 @@ export const useWeatherStore = defineStore('weather', () => {
     }
 
     // Get current weather form city
-    async function getCurrentWeather(cityId, unit, lang) {
+    async function getCurrentWeather(cityId, unit, lang, force) {
         $toast.clear();
 
-        // Check if city is already in storage
-        const storage = checkStorage(cityId, unit, lang);
-        if (storage) {
-            return storage;
+        if (!force) {
+            // Check if city is already in storage
+            const storage = checkStorage(cityId, unit, lang);
+            if (storage) {
+                return storage;
+            }
         }
 
         try {
             // Get data from API
-            const apiResponse = await axios.get(`${backendUrl}/cities/${cityId}/current?unit=${unit}&lang=${lang}`);
+            const apiResponse = await axios.get(
+                `${backendUrl}/cities/${cityId}/current?unit=${unit}&lang=${lang}&force=${force}`,
+            );
 
             // Save data to storage
             storeWeather(cityId, unit, lang, apiResponse.data);
