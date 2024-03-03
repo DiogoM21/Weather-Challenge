@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits, useSlots, computed } from 'vue';
+import { useSlots, computed } from 'vue';
 
 defineProps({
     isForm: Boolean,

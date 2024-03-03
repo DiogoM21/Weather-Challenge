@@ -7,7 +7,10 @@ module.exports = {
     plugins: ['prettier'],
     rules: {
         'prettier/prettier': 'error',
-        'vue/multi-word-component-names': 'off',
         'vue/script-setup-uses-vars': 'error',
+    },
+    globals: {
+        defineProps: 'readonly',
+        defineEmits: 'readonly',
     },
 };
