@@ -11,6 +11,7 @@ const mainStore = useMainStore();
 const weatherStore = useWeatherStore();
 
 const weather = ref(weatherStore.weather);
+const isRefreshing = ref(false);
 
 const selectUnits = [
     { label: 'Celsius', value: 'metric', icon: mdiTemperatureCelsius },
@@ -30,7 +31,12 @@ const selectedCity = ref('2267094');
 const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.unit).value);
 
 async function getCurrentWeather() {
-    weather.value = await weatherStore.getCurrentWeather(selectedCity.value, selectedUnit.value, mainStore.lang);
+    isRefreshing.value = true;
+    try {
+        weather.value = await weatherStore.getCurrentWeather(selectedCity.value, selectedUnit.value, mainStore.lang);
+    } finally {
+        isRefreshing.value = false;
+    }
 }
 
 onMounted(async () => {
@@ -86,7 +92,7 @@ function getWindSymbol() {
                     :icon="selectUnits.find((unit) => unit.value === selectedUnit).icon"
                 />
             </div>
-            <div class="flex flex-row items-center gap-4 justify-center">
+            <div class="flex flex-row items-center gap-4 justify-center" :class="isRefreshing ? 'animate-pulse' : ''">
                 <div>
                     <img
                         :src="
@@ -134,7 +140,9 @@ function getWindSymbol() {
         </div>
         <template #footer>
             <div class="flex justify-end">
-                <span class="text-sm font-bold text-gray-700 dark:text-slate-400">{{ weather?.info.dt ?? null }}</span>
+                <span class="text-sm font-bold text-gray-700 dark:text-slate-400">{{
+                    weather?.info.dateTime ?? null
+                }}</span>
             </div>
         </template>
     </CardBox>

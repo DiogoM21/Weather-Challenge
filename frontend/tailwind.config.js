@@ -3,7 +3,9 @@ import forms from '@tailwindcss/forms';
 import aspectRatio from '@tailwindcss/aspect-ratio';
 
 export default {
-    content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+    purge: {
+        content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
+    },
     theme: {
         extend: {},
     },

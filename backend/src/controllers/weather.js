@@ -23,7 +23,8 @@ async function getCurrentWeather(cityId, unit, lang, res) {
                     externalApiResponse.data.weather[0].description.charAt(0).toUpperCase() +
                     externalApiResponse.data.weather[0].description.slice(1),
                 icon: externalApiResponse.data.weather[0].icon,
-                dt: new Intl.DateTimeFormat(lang === 'pt' ? 'pt-PT' : 'en-US', {
+                dt: externalApiResponse.data.dt,
+                dateTime: new Intl.DateTimeFormat(lang === 'pt' ? 'pt-PT' : 'en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                     day: '2-digit',
