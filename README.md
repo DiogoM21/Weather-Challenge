@@ -8,15 +8,19 @@ Glartek Challenge FullStack ➔ LVL Junior
 
 2. Front-End with Vue.js (Dashboard) with weather information.
 
+## 📝 Requirements:
+
+1. Docker
+
+2. Setup Back-End ➔ Check the [README](./backend/README.md) file.
+
+3. Setup Front-End ➔ Check the [README](./frontend/README.md) file.
+
 ## ⚙️ Execution:
 
-1. Requires ➔ Docker.
+1. docker-compose up -d ➔ In root path.
 
-2. docker-compose up -d ➔ In root path.
-
-3. Starts ➔ Database, phpMyAdmin, Back-End and Front-End.
-
-4. Ready to Start ➔ Front-End build (dist) already included in git.
+2. Starts ➔ Database, phpMyAdmin, Back-End and Front-End.
 
 ## 📡 URLs:
 
