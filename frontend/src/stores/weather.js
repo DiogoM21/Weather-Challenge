@@ -76,15 +76,33 @@ export const useWeatherStore = defineStore('weather', () => {
 
             return (weather.value = apiResponse.data);
         } catch (error) {
+            handleError(error.response);
+        }
+    }
+
+    // Handle error
+    function handleError(response) {
+        let errorMsg;
+        if (response.status === 400) {
             switch (mainStore.lang) {
                 case 'pt':
-                    console.error(`Erro ao carregar dados da API: `, error);
-                    $toast.error('Erro ao carregar dados da API.');
+                    errorMsg = 'Erro ao carregar dados da API Back-End.';
                     break;
                 default:
-                    console.error('Error loading API data: ', error);
-                    $toast.error('Error loading API data.');
+                    errorMsg = 'Error loading Back-End API data.';
             }
+            console.error(errorMsg, response.data.message);
+            $toast.error(errorMsg);
+        } else {
+            switch (mainStore.lang) {
+                case 'pt':
+                    errorMsg = 'Erro ao carregar dados da API Open Weather.';
+                    break;
+                default:
+                    errorMsg = 'Error loading Open Weather API data.';
+            }
+            console.error(errorMsg, response);
+            $toast.error(errorMsg);
         }
     }
 

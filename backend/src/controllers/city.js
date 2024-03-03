@@ -5,20 +5,34 @@ const weatherController = require('./weather');
 // Cities
 const cities = [
     { name: 'Lisboa', id: 2267056 },
-    { name: 'Leira', id: 2267094 },
+    { name: 'Leiria', id: 2267094 },
     { name: 'Coimbra', id: 2740636 },
     { name: 'Porto', id: 2735941 },
     { name: 'Faro', id: 2268337 },
 ];
 
 // Method to validate cityId
-const validateCityId = (cityId) => {
+const validateCityId = (cityId, lang) => {
     if (isNaN(cityId)) {
-        return { error: 'Invalid city ID. Must be a number!' };
+        switch (lang) {
+            case 'pt':
+                return { error: 'ID de cidade inválido. Deve ser um número!' };
+            default:
+                return { error: 'Invalid city ID. Must be a number!' };
+        }
     }
     if (!cities.find((city) => city.id === parseInt(cityId))) {
+        let errorMsg;
+        switch (lang) {
+            case 'pt':
+                errorMsg = 'ID de cidade inválido. Deve ser um ID de cidade válido!';
+                break;
+            default:
+                errorMsg = 'Invalid city ID. Must be a valid city ID!';
+        }
+
         return {
-            error: 'Invalid city ID. Must be a valid city ID!',
+            message: errorMsg,
             valid: cities.map((city) => city),
         };
     }
@@ -41,7 +55,7 @@ router.get('/:id/current', (req, res) => {
     const force = req.query.force || false;
 
     // Validate cityId
-    const invalid = validateCityId(cityId);
+    let invalid = validateCityId(cityId, lang);
     if (invalid) {
         return res.status(400).json(invalid);
     }
