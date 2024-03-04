@@ -1,6 +1,20 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { mdiReload, mdiHomeCity, mdiTemperatureCelsius, mdiTemperatureKelvin, mdiTemperatureFahrenheit } from '@mdi/js';
+import {
+    mdiReload,
+    mdiHomeCity,
+    mdiTemperatureCelsius,
+    mdiTemperatureKelvin,
+    mdiTemperatureFahrenheit,
+    mdiArrowUp,
+    mdiArrowTopRight,
+    mdiArrowRight,
+    mdiArrowBottomRight,
+    mdiArrowDown,
+    mdiArrowBottomLeft,
+    mdiArrowLeft,
+    mdiArrowTopLeft,
+} from '@mdi/js';
 import CardBox from './CardBox.vue';
 import BaseIcon from './BaseIcon.vue';
 import FormField from './FormField.vue';
@@ -71,7 +85,7 @@ function getTempColor(temp) {
         case 'default':
             return temp > 300 ? hot : temp < 288 ? cold : warm;
         default:
-            return 'text-dark dark:text-white';
+            return 'text-black dark:text-white';
     }
 }
 
@@ -99,11 +113,33 @@ function getWindSymbol() {
             return 'm/s';
     }
 }
+
+function getIconWind(deg) {
+    if (deg >= 337.5 || deg < 22.5) {
+        return mdiArrowUp;
+    } else if (deg >= 22.5 && deg < 67.5) {
+        return mdiArrowTopRight;
+    } else if (deg >= 67.5 && deg < 112.5) {
+        return mdiArrowRight;
+    } else if (deg >= 112.5 && deg < 157.5) {
+        return mdiArrowBottomRight;
+    } else if (deg >= 157.5 && deg < 202.5) {
+        return mdiArrowDown;
+    } else if (deg >= 202.5 && deg < 247.5) {
+        return mdiArrowBottomLeft;
+    } else if (deg >= 247.5 && deg < 292.5) {
+        return mdiArrowLeft;
+    } else if (deg >= 292.5 && deg < 337.5) {
+        return mdiArrowTopLeft;
+    } else {
+        return mdiArrowUp;
+    }
+}
 </script>
 
 <template>
     <CardBox :updated="weather?.info.dt">
-        <div class="flex flex-col lg:flex-row items-center justify-evenly w-full text-dark dark:text-white">
+        <div class="flex flex-col lg:flex-row items-center justify-evenly w-full text-black dark:text-white">
             <div class="flex flex-row lg:flex-col mb-6 lg:mb-0 items-center gap-4 justify-center">
                 <FormField
                     v-model="selectedCity"
@@ -123,7 +159,7 @@ function getWindSymbol() {
                 />
             </div>
             <div
-                class="flex flex-row items-center gap-2 md:gap-4 justify-center"
+                class="flex flex-row items-center gap-0 md:gap-4 justify-center"
                 :class="isRefreshing ? 'animate-pulse' : ''"
             >
                 <div>
@@ -135,13 +171,13 @@ function getWindSymbol() {
                         "
                         :alt="weather?.info.description"
                         :title="weather?.info.description"
-                        class="w-24 h-24 md:w-32 md:h-32"
+                        class="w-20 h-20 md:w-32 md:h-32"
                     />
                 </div>
                 <div>
-                    <div class="flex flex-row items-center gap-4 justify-center">
+                    <div class="flex flex-row items-center gap-2 md:gap-4 justify-center">
                         <span class="text-3xl md:text-4xl">{{
-                            weather?.info.city ?? (mainStore.lang === 'pt' ? 'Cidade' : 'City')
+                            weather?.info.name ?? (mainStore.lang === 'pt' ? 'Cidade' : 'City')
                         }}</span>
                         <span class="text-3xl md:text-4xl font-bold" :class="getTempColor(weather?.values.temp)"
                             >{{ weather?.values.temp ?? 0 }}{{ getUnitSymbol() }}</span
@@ -152,6 +188,12 @@ function getWindSymbol() {
                             >{{ mainStore.lang === 'pt' ? 'Vento' : 'Wind' }}: {{ weather?.values.wind ?? 0
                             }}{{ getWindSymbol() }}</span
                         >
+                        <BaseIcon
+                            :path="getIconWind(weather?.values.deg)"
+                            :size="24"
+                            :title="mainStore.lang === 'pt' ? 'Direção do vento' : 'Wind direction'"
+                            class="text-gray-800 dark:text-gray-400"
+                        />
                         <span class="text-md md:text-xl text-gray-800 dark:text-gray-400"
                             >{{ mainStore.lang === 'pt' ? 'Direção' : 'Direction' }}:
                             {{ weather?.values.deg ?? 0 }}°</span
@@ -166,7 +208,7 @@ function getWindSymbol() {
                             :path="mdiReload"
                             :size="24"
                             :title="mainStore.lang === 'pt' ? 'Forçar atualização' : 'Force update'"
-                            class="mt-0 md:mt-1 hover:text-blue-700 dark:hover:text-sky-500 transition-colors"
+                            class="mt-0 md:mt-1 hover:text-blue-700 dark:hover:text-sky-500 transition-all hover:scale-110"
                             :class="isRefreshing ? 'cursor-not-allowed' : 'cursor-pointer'"
                             @click="isRefreshing ? null : getCities(true)"
                         />
@@ -177,7 +219,7 @@ function getWindSymbol() {
         <template #footer>
             <div class="flex justify-end">
                 <span class="text-sm font-semibold text-gray-700 dark:text-slate-400">{{
-                    weather?.info.dateTime ?? null
+                    weather?.info.created_at ?? null
                 }}</span>
             </div>
         </template>

@@ -26,10 +26,10 @@ function getCities(lang, db, callback) {
     });
 }
 
-// Method to validate cityId
-function validateCityId(cityId, lang, db, callback) {
-    // Check if cityId is a number
-    if (isNaN(cityId)) {
+// Method to validate cityCode
+function validatecityCode(cityCode, lang, db, callback) {
+    // Check if cityCode is a number
+    if (isNaN(cityCode)) {
         let message;
         switch (lang) {
             case 'pt':
@@ -45,8 +45,8 @@ function validateCityId(cityId, lang, db, callback) {
             if (error) {
                 callback(error);
             } else {
-                // Check if cityId is valid
-                if (!cities.find((city) => city.code === parseInt(cityId))) {
+                // Check if cityCode is valid
+                if (!cities.find((city) => city.code === parseInt(cityCode))) {
                     let message;
                     switch (lang) {
                         case 'pt':
@@ -85,24 +85,30 @@ router.get('/', (req, res) => {
 
 // Current weather route
 router.get('/:id/current', (req, res) => {
-    const cityId = req.params.id;
+    const cityCode = req.params.id;
     const unit = req.query.unit || 'metric';
     const lang = req.query.lang || 'en';
     const force = req.query.force || false;
 
-    // Validate cityId
-    validateCityId(cityId, lang, req.db, (error) => {
+    // Validate cityCode
+    validatecityCode(cityCode, lang, req.db, (error) => {
         if (error) {
             return res.status(400).json({ message: error.message });
         }
         if (!force) {
-            // Check if city is already in storage
-            const storage = weatherController.checkStorage(cityId, unit, lang);
-            if (storage) {
-                return res.json(storage);
-            }
+            // Check if city is already in database
+            weatherController.checkDatabase(cityCode, unit, lang, req.db, (err, weather) => {
+                if (err) {
+                    console.error(err.message);
+                } else if (weather) {
+                    return res.json(weather);
+                } else {
+                    return weatherController.getCurrentWeather(cityCode, unit, lang, res, req.db);
+                }
+            });
+        } else {
+            return weatherController.getCurrentWeather(cityCode, unit, lang, res, req.db);
         }
-        return weatherController.getCurrentWeather(cityId, unit, lang, res);
     });
 });
 

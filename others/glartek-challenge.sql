@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Tempo de geração: 03-Mar-2024 às 18:38
+-- Tempo de geração: 04-Mar-2024 às 02:40
 -- Versão do servidor: 11.3.2-MariaDB-1:11.3.2+maria~ubu2204
 -- versão do PHP: 8.2.8
 
@@ -42,7 +42,7 @@ INSERT INTO `cities` (`id`, `name`, `code`) VALUES
 (2, 'Leiria', 2267094),
 (3, 'Coimbra', 2740636),
 (4, 'Porto', 2735941),
-(5, 'Faro', 2268337);
+(6, 'Faro', 2268337);
 
 -- --------------------------------------------------------
 
@@ -53,6 +53,8 @@ INSERT INTO `cities` (`id`, `name`, `code`) VALUES
 CREATE TABLE `weather` (
   `id` bigint(20) NOT NULL,
   `city_id` bigint(20) NOT NULL,
+  `unit` varchar(20) NOT NULL,
+  `lang` varchar(5) NOT NULL,
   `temp` decimal(10,0) NOT NULL,
   `humidity` decimal(10,0) NOT NULL,
   `wind` decimal(10,0) NOT NULL,
@@ -60,7 +62,7 @@ CREATE TABLE `weather` (
   `description` varchar(255) NOT NULL,
   `icon` varchar(255) NOT NULL,
   `dt` int(10) UNSIGNED NOT NULL,
-  `dateTime` datetime NOT NULL
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -79,7 +81,8 @@ ALTER TABLE `cities`
 --
 ALTER TABLE `weather`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `city_id` (`city_id`);
+  ADD KEY `city_id` (`city_id`),
+  ADD KEY `unit` (`unit`,`lang`);
 
 --
 -- AUTO_INCREMENT de tabelas despejadas
@@ -89,7 +92,7 @@ ALTER TABLE `weather`
 -- AUTO_INCREMENT de tabela `cities`
 --
 ALTER TABLE `cities`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `weather`

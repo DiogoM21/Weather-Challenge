@@ -38,8 +38,13 @@ const menuClick = (item) => {
                     :to="item.route"
                     :href="item.href"
                     :title="isLangPT ? item.labelPT || item.hoverPT : item.label || item.hover"
-                    class="flex items-center h-14 px-2 transition-colors text-dark hover:text-blue-700 dark:text-white dark:hover:text-sky-500 cursor-pointer hover:font-semibold"
+                    class="flex items-center h-14 px-2 transition-all cursor-pointer hover:font-medium dark:hover:text-sky-500 hover:scale-105"
                     target="_blank"
+                    :class="
+                        item.hover
+                            ? 'text-blue-600 dark:text-sky-200 hover:text-blue-900'
+                            : 'text-black dark:text-white hover:text-blue-700'
+                    "
                     @click="item.route ? null : menuClick(item)"
                 >
                     <BaseIcon :path="item.icon" />
