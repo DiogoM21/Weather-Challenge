@@ -27,34 +27,28 @@ const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.
 
 async function getCities(force = false) {
     isRefreshing.value = true;
-    await cityStore
-        .getCities(force)
-        .then((cities) => {
-            if (cities && cities.length > 0) {
-                selectCities.value = cities;
+    await cityStore.getCities(force).then((cities) => {
+        if (cities && cities.length > 0) {
+            selectCities.value = cities;
+            if (!selectedCity.value) {
                 selectedCity.value = cities[0].value;
-                if (force) {
-                    getCurrentWeather(true);
-                }
             }
-        })
-        .finally(() => {
-            isRefreshing.value = false;
-        });
+            if (force) {
+                getCurrentWeather(true);
+            }
+        }
+    });
+    isRefreshing.value = false;
 }
 
 async function getCurrentWeather(force = false) {
     isRefreshing.value = true;
-    weatherStore
-        .getCurrentWeather(selectedCity.value, selectedUnit.value, force)
-        .then((data) => {
-            if (data) {
-                weather.value = data;
-            }
-        })
-        .finally(() => {
-            isRefreshing.value = false;
-        });
+    weatherStore.getCurrentWeather(selectedCity.value, selectedUnit.value, force).then((data) => {
+        if (data) {
+            weather.value = data;
+        }
+    });
+    isRefreshing.value = false;
 }
 
 onMounted(async () => {
@@ -66,9 +60,9 @@ watch([() => mainStore.lang, () => selectedCity.value, () => selectedUnit.value]
 });
 
 function getTempColor(temp) {
-    let cold = 'text-blue-600 dark:text-blue-500';
-    let hot = 'text-red-600 dark:text-red-500';
-    let warm = 'text-yellow-600 dark:text-yellow-500';
+    let cold = 'text-blue-700 dark:text-blue-500';
+    let hot = 'text-red-700 dark:text-red-500';
+    let warm = 'text-yellow-700 dark:text-yellow-500';
     switch (selectedUnit.value) {
         case 'imperial':
             return temp > 80 ? hot : temp < 60 ? cold : warm;
@@ -77,7 +71,7 @@ function getTempColor(temp) {
         case 'default':
             return temp > 300 ? hot : temp < 288 ? cold : warm;
         default:
-            return 'text-gray-900 dark:text-white';
+            return 'text-dark dark:text-white';
     }
 }
 
@@ -109,7 +103,7 @@ function getWindSymbol() {
 
 <template>
     <CardBox :updated="weather?.info.dt">
-        <div class="flex flex-col lg:flex-row items-center justify-evenly w-full text-gray-900 dark:text-white">
+        <div class="flex flex-col lg:flex-row items-center justify-evenly w-full text-dark dark:text-white">
             <div class="flex flex-row lg:flex-col mb-6 lg:mb-0 items-center gap-4 justify-center">
                 <FormField
                     v-model="selectedCity"
@@ -149,16 +143,16 @@ function getWindSymbol() {
                         <span class="text-3xl md:text-4xl">{{
                             weather?.info.city ?? (mainStore.lang === 'pt' ? 'Cidade' : 'City')
                         }}</span>
-                        <span class="text-3xl md:text-4xl font-bold" :class="getTempColor(weather?.values.temp ?? 0)"
+                        <span class="text-3xl md:text-4xl font-bold" :class="getTempColor(weather?.values.temp)"
                             >{{ weather?.values.temp ?? 0 }}{{ getUnitSymbol() }}</span
                         >
                     </div>
                     <div class="flex flex-row items-center gap-4 justify-center mt-4">
-                        <span class="text-md md:text-xl text-gray-900 dark:text-gray-400"
+                        <span class="text-md md:text-xl text-gray-800 dark:text-gray-400"
                             >{{ mainStore.lang === 'pt' ? 'Vento' : 'Wind' }}: {{ weather?.values.wind ?? 0
                             }}{{ getWindSymbol() }}</span
                         >
-                        <span class="text-md md:text-xl text-gray-900 dark:text-gray-400"
+                        <span class="text-md md:text-xl text-gray-800 dark:text-gray-400"
                             >{{ mainStore.lang === 'pt' ? 'Direção' : 'Direction' }}:
                             {{ weather?.values.deg ?? 0 }}°</span
                         >
@@ -172,7 +166,7 @@ function getWindSymbol() {
                             :path="mdiReload"
                             :size="24"
                             :title="mainStore.lang === 'pt' ? 'Forçar atualização' : 'Force update'"
-                            class="mt-0 md:mt-1 hover:text-blue-900 dark:hover:text-sky-500 transition-colors"
+                            class="mt-0 md:mt-1 hover:text-blue-700 dark:hover:text-sky-500 transition-colors"
                             :class="isRefreshing ? 'cursor-not-allowed' : 'cursor-pointer'"
                             @click="isRefreshing ? null : getCities(true)"
                         />

@@ -38,7 +38,7 @@ const menuClick = (item) => {
                     :to="item.route"
                     :href="item.href"
                     :title="isLangPT ? item.labelPT || item.hoverPT : item.label || item.hover"
-                    class="flex items-center h-14 px-2 transition-colors text-gray-900 hover:text-blue-900 dark:text-white dark:hover:text-sky-500 cursor-pointer hover:font-semibold"
+                    class="flex items-center h-14 px-2 transition-colors text-dark hover:text-blue-700 dark:text-white dark:hover:text-sky-500 cursor-pointer hover:font-semibold"
                     target="_blank"
                     @click="item.route ? null : menuClick(item)"
                 >

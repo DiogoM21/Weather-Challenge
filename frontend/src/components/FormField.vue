@@ -43,7 +43,7 @@ const computedValue = computed({
     <div>
         <div class="flex-grow">
             <label v-if="label" :for="label" class="block font-bold mb-2">{{ label }}</label>
-            <div class="relative text-gray-900 dark:text-white">
+            <div class="relative text-black dark:text-white">
                 <select
                     v-if="type === 'select'"
                     :id="label"
