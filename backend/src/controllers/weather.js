@@ -8,8 +8,12 @@ const weatherApiKey = '519af113678c353b1ae6ef8ce8c10803';
 // Check if city is already in database
 function checkDatabase(cityCode, unit, lang, db, callback) {
     // Check if city is already in database and if it's not older than 30 minutes
-    const query = `SELECT * FROM weather JOIN cities ON weather.city_id = cities.id WHERE cities.code = ? AND weather.unit = ? AND weather.lang = ? 
-    AND weather.created_at > DATE_SUB(NOW(), INTERVAL 30 MINUTE)`;
+    const query = `
+    SELECT * FROM weather 
+    JOIN cities ON weather.city_id = cities.id JOIN weather_next ON weather.id = weather_next.weather_id
+    WHERE cities.code = ? 
+    AND weather.unit = ? AND weather.lang = ? AND weather.created_at > DATE_SUB(NOW(), INTERVAL 30 MINUTE)
+    `;
     db.query(query, [cityCode, unit, lang], (error, results) => {
         if (error) {
             switch (lang) {
@@ -41,9 +45,30 @@ function checkDatabase(cityCode, unit, lang, db, callback) {
                         year: 'numeric',
                     }).format(new Date(results[0].created_at)),
                 },
+                next: results.map((item) => {
+                    return {
+                        values: {
+                            temp: item.temp,
+                            feels_like: item.feels_like,
+                            humidity: item.humidity,
+                            wind: item.wind,
+                            deg: item.deg,
+                        },
+                        info: {
+                            description: item.description,
+                            icon: item.icon,
+                            dt: item.dt,
+                            date_time: new Intl.DateTimeFormat(lang === 'pt' ? 'pt-PT' : 'en-US', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric',
+                            }).format(new Date(item.dt * 1000)),
+                        },
+                    };
+                }),
             });
-
-            // TODO: Load next weather data
         } else {
             callback(null, null);
         }
@@ -64,8 +89,6 @@ function deleteOldWeatherData(cityCode, unit, lang, db) {
             }
         }
     });
-
-    // TODO: Delete next weather data
 }
 
 // Save weather data to database
@@ -114,7 +137,51 @@ function saveWeatherData(cityCode, unit, lang, weather, db) {
                 },
             );
 
-            // TODO: Save next weather data
+            // Save next weather data
+            const selectQuery = 'SELECT id FROM weather WHERE city_id = ? AND dt = ?';
+            db.query(selectQuery, [cityId, weather.info.dt], (error, results) => {
+                if (error) {
+                    switch (lang) {
+                        case 'pt':
+                            console.error('Erro ao carregar tempo:', error);
+                            break;
+                        default:
+                            console.error('Error loading weather:', error);
+                    }
+                } else {
+                    const weatherId = results[0].id;
+                    const insertNextQuery =
+                        'INSERT INTO weather_next (weather_id, temp, feels_like, humidity, wind, deg, description, icon, dt, date_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                    weather.next.forEach((item) => {
+                        db.query(
+                            insertNextQuery,
+                            [
+                                weatherId,
+                                item.values.temp,
+                                item.values.feels_like,
+                                item.values.humidity,
+                                item.values.wind,
+                                item.values.deg,
+                                item.info.description,
+                                item.info.icon,
+                                item.info.dt,
+                                new Date(item.info.dt * 1000).toISOString().replace('T', ' ').substring(0, 19),
+                            ],
+                            (error) => {
+                                if (error) {
+                                    switch (lang) {
+                                        case 'pt':
+                                            console.error('Erro ao guardar tempo seguinte:', error);
+                                            break;
+                                        default:
+                                            console.error('Error saving next weather:', error);
+                                    }
+                                }
+                            },
+                        );
+                    });
+                }
+            });
         }
     });
 }

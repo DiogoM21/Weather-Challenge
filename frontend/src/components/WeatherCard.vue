@@ -42,28 +42,36 @@ const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.
 
 async function getCities(force = false) {
     isRefreshing.value = true;
-    await cityStore.getCities(force).then((cities) => {
-        if (cities && cities.length > 0) {
-            selectCities.value = cities;
-            if (!selectedCity.value) {
-                selectedCity.value = cities[0].value;
+    await cityStore
+        .getCities(force)
+        .then((cities) => {
+            if (cities && cities.length > 0) {
+                selectCities.value = cities;
+                if (!selectedCity.value) {
+                    selectedCity.value = cities[0].value;
+                }
+                if (force) {
+                    getCurrentWeather(true);
+                }
             }
-            if (force) {
-                getCurrentWeather(true);
-            }
-        }
-    });
-    isRefreshing.value = false;
+        })
+        .finally(() => {
+            isRefreshing.value = false;
+        });
 }
 
 async function getCurrentWeather(force = false) {
     isRefreshing.value = true;
-    weatherStore.getCurrentWeather(selectedCity.value, selectedUnit.value, force).then((data) => {
-        if (data) {
-            weather.value = data;
-        }
-    });
-    isRefreshing.value = false;
+    weatherStore
+        .getCurrentWeather(selectedCity.value, selectedUnit.value, force)
+        .then((data) => {
+            if (data) {
+                weather.value = data;
+            }
+        })
+        .finally(() => {
+            isRefreshing.value = false;
+        });
 }
 
 onMounted(async () => {
@@ -140,7 +148,9 @@ function getIconWind(deg) {
 
 <template>
     <CardBox :updated="weather?.info.dt">
-        <div class="flex flex-col lg:flex-row items-center justify-evenly w-full text-black dark:text-white">
+        <div
+            class="flex flex-col lg:flex-row items-center justify-evenly w-full text-black dark:text-white transition-all"
+        >
             <div class="flex flex-row lg:flex-col mb-6 my-1 lg:mb-0 items-center gap-3 md:gap-4 justify-center">
                 <FormField
                     v-model="selectedCity"

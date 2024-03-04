@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Tempo de geração: 04-Mar-2024 às 16:10
+-- Tempo de geração: 04-Mar-2024 às 16:40
 -- Versão do servidor: 11.3.2-MariaDB-1:11.3.2+maria~ubu2204
 -- versão do PHP: 8.2.8
 
@@ -66,6 +66,26 @@ CREATE TABLE `weather` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `weather_next`
+--
+
+CREATE TABLE `weather_next` (
+  `id` bigint(20) NOT NULL,
+  `weather_id` bigint(20) NOT NULL,
+  `temp` decimal(10,0) NOT NULL,
+  `feels_like` decimal(10,0) NOT NULL,
+  `humidity` decimal(10,0) NOT NULL,
+  `wind` decimal(10,0) NOT NULL,
+  `deg` int(10) NOT NULL,
+  `description` varchar(255) NOT NULL,
+  `icon` varchar(255) NOT NULL,
+  `dt` int(10) UNSIGNED NOT NULL,
+  `date_time` timestamp NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 --
 -- Índices para tabelas despejadas
 --
@@ -86,6 +106,13 @@ ALTER TABLE `weather`
   ADD KEY `unit` (`unit`,`lang`);
 
 --
+-- Índices para tabela `weather_next`
+--
+ALTER TABLE `weather_next`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `weather_id` (`weather_id`);
+
+--
 -- AUTO_INCREMENT de tabelas despejadas
 --
 
@@ -99,7 +126,13 @@ ALTER TABLE `cities`
 -- AUTO_INCREMENT de tabela `weather`
 --
 ALTER TABLE `weather`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT de tabela `weather_next`
+--
+ALTER TABLE `weather_next`
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Restrições para despejos de tabelas
@@ -110,6 +143,12 @@ ALTER TABLE `weather`
 --
 ALTER TABLE `weather`
   ADD CONSTRAINT `city_id` FOREIGN KEY (`city_id`) REFERENCES `cities` (`id`);
+
+--
+-- Limitadores para a tabela `weather_next`
+--
+ALTER TABLE `weather_next`
+  ADD CONSTRAINT `weather_id` FOREIGN KEY (`weather_id`) REFERENCES `weather` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

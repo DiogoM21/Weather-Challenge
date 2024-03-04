@@ -29,7 +29,7 @@ const menuClick = (item) => {
 
 <template>
     <nav
-        class="top-0 inset-x-0 fixed h-14 z-30 transition-position w-screen shadow-md bg-blue-300/90 dark:bg-gray-800/90"
+        class="top-0 inset-x-0 fixed h-14 z-30 transition-position transition-all w-screen shadow-md bg-blue-300/90 dark:bg-gray-800/90"
     >
         <div class="grid justify-items-center grid-cols-6 gap-4 max-w-7xl mx-auto h-full">
             <div v-for="item in menu" :key="item.label">
