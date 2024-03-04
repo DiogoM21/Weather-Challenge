@@ -12,7 +12,7 @@ async function getCities(lang, db) {
         const results = await queryPromise(query);
         return results;
     } catch (error) {
-        throw new Error(lang === 'pt' ? 'Erro ao carregar cidades!' : 'Error loading cities!');
+        return Promise.reject(lang === 'pt' ? 'Erro ao carregar cidades!' : 'Error loading cities!');
     }
 }
 
@@ -20,14 +20,14 @@ async function getCities(lang, db) {
 async function validatecityCode(cityCode, lang, db) {
     // Check if cityCode is a number
     if (isNaN(cityCode)) {
-        throw new Error(lang === 'pt' ? 'Código de cidade deve ser um número!' : 'City code must be a number!');
+        return Promise.reject(lang === 'pt' ? 'Código de cidade deve ser um número!' : 'City code must be a number!');
     } else {
         try {
             // Get cities from database
             const cities = await getCities(lang, db);
             // Check if cityCode is valid
             if (!cities.find((city) => city.code === parseInt(cityCode))) {
-                throw new Error(lang === 'pt' ? 'Código de cidade não é válido!' : 'City code is not valid!');
+                return Promise.reject(lang === 'pt' ? 'Código de cidade não é válido!' : 'City code is not valid!');
             }
         } catch (error) {
             return Promise.reject(error);
@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(500).send({ message: error.message });
+        res.status(500).send({ message: error });
     }
 });
 
@@ -77,7 +77,7 @@ router.get('/:id/weather', async (req, res) => {
         return weatherController.getAPIWeather(cityCode, unit, lang, res, req.db);
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ message: error.message });
+        return res.status(500).json({ message: error });
     }
 });
 

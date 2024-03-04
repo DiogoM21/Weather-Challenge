@@ -43,15 +43,20 @@ const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.
 async function getCities(force = false) {
     isRefreshing.value = true;
     await cityStore
-        .getCities(force)
+        .getAPICities(force)
         .then((cities) => {
             if (cities && cities.length > 0) {
                 selectCities.value = cities;
                 if (!selectedCity.value) {
                     selectedCity.value = cities[0].value;
+                } else {
+                    const city = cities.find((c) => c.value === selectedCity.value);
+                    if (!city) {
+                        selectedCity.value = cities[0].value;
+                    }
                 }
                 if (force) {
-                    getCurrentWeather(true);
+                    getAPIWeather(true);
                 }
             }
         })
@@ -60,10 +65,10 @@ async function getCities(force = false) {
         });
 }
 
-async function getCurrentWeather(force = false) {
+async function getAPIWeather(force = false) {
     isRefreshing.value = true;
     weatherStore
-        .getCurrentWeather(selectedCity.value, selectedUnit.value, force)
+        .getAPIWeather(selectedCity.value, selectedUnit.value, force)
         .then((data) => {
             if (data) {
                 weather.value = data;
@@ -79,7 +84,7 @@ onMounted(async () => {
 });
 
 watch([() => mainStore.lang, () => selectedCity.value, () => selectedUnit.value], async () => {
-    await getCurrentWeather();
+    await getAPIWeather();
 });
 
 function getTempColor(temp) {

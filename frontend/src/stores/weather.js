@@ -16,7 +16,7 @@ export const useWeatherStore = defineStore('weather', () => {
     const selectedCity = ref(null);
     const selectedUnit = ref('metric');
 
-    // Check if city is already in storage
+    // Check if weather is already in storage
     function checkStorage() {
         // Get storage
         const storage = JSON.parse(localStorage.getItem('OW-weather')) || {};
@@ -28,22 +28,16 @@ export const useWeatherStore = defineStore('weather', () => {
             try {
                 const now = new Date().getTime();
                 const diff = now - storedWeather.info.dt * 1000;
-
                 // If data is not older than 30 minute, return it
                 if (diff < 1800000) {
                     return storedWeather;
                 }
             } catch (error) {
-                switch (mainStore.lang) {
-                    case 'pt':
-                        $toast.error('Erro ao carregar tempo da memória.');
-                        break;
-                    default:
-                        $toast.error('Error loading weather from memory.');
-                }
+                return mainStore.lang === 'pt'
+                    ? $toast.error('Erro ao carregar tempo da memória.')
+                    : $toast.error('Error loading weather from memory.');
             }
         }
-
         return false;
     }
 
@@ -52,34 +46,29 @@ export const useWeatherStore = defineStore('weather', () => {
         // Get storage
         const storage = JSON.parse(localStorage.getItem('OW-weather')) || {};
         const key = `${selectedCity.value}-${selectedUnit.value}-${mainStore.lang}`;
+        storage[key] = data;
 
         // Save data to storage
-        storage[key] = data;
         localStorage.setItem('OW-weather', JSON.stringify(storage));
     }
 
-    // Get current weather form city
-    async function getCurrentWeather(cityId, unit, force) {
+    // Get weather from API
+    async function getAPIWeather(cityId, unit, force) {
         selectedCity.value = cityId;
         selectedUnit.value = unit;
-
         if (!force) {
             // Check if weather is already in storage
             const storage = checkStorage();
-            if (storage) {
-                return storage;
-            }
+            if (storage) return storage;
         }
-
         try {
             // Get data from API and save it to storage
             const apiResponse = await axios.get(
-                `${backendUrl}/cities/${selectedCity.value}/current?unit=${selectedUnit.value}&lang=${mainStore.lang}&force=${force}`,
+                `${backendUrl}/cities/${selectedCity.value}/weather?unit=${selectedUnit.value}&lang=${mainStore.lang}&force=${force}`,
             );
             if (apiResponse.data.values) {
                 storeWeather(apiResponse.data);
             }
-
             return apiResponse.data;
         } catch (error) {
             handleError(error);
@@ -88,29 +77,9 @@ export const useWeatherStore = defineStore('weather', () => {
 
     // Handle error from API
     function handleError(error) {
-        let errorMsg;
-        switch (mainStore.lang) {
-            case 'pt':
-                errorMsg = 'Erro ao carregar dados da API Back-End.';
-                break;
-            default:
-                errorMsg = 'Error loading Back-End API data.';
-        }
+        let errorMsg = mainStore.lang === 'pt' ? 'Erro ao carregar dados da API.' : 'Error loading Back-End API.';
         try {
-            // Back-End API error
-            if (error.response.status === 400) {
-                $toast.error(errorMsg + ' ' + error.response.data.message);
-            } else {
-                // Open Weather API error
-                switch (mainStore.lang) {
-                    case 'pt':
-                        errorMsg = 'Erro ao carregar dados da API Open Weather.';
-                        break;
-                    default:
-                        errorMsg = 'Error loading Open Weather API data.';
-                }
-                $toast.error(errorMsg);
-            }
+            $toast.error(errorMsg + ' ' + error.response.data.message);
         } catch {
             $toast.error(errorMsg + ' ' + error);
         }
@@ -119,6 +88,6 @@ export const useWeatherStore = defineStore('weather', () => {
     return {
         selectedCity,
         selectedUnit,
-        getCurrentWeather,
+        getAPIWeather,
     };
 });

@@ -16,7 +16,7 @@ function formatDateTime(dt, lang) {
             year: 'numeric',
         }).format(new Date(dt));
     } catch (error) {
-        throw new Error(lang === 'pt' ? 'Erro ao formatar data e hora!' : 'Error formatting date and time!');
+        return Promise.reject(lang === 'pt' ? 'Erro ao formatar data e hora!' : 'Error formatting date and time!');
     }
 }
 
@@ -69,7 +69,7 @@ async function checkDatabase(cityCode, unit, lang, db) {
             return false;
         }
     } catch (error) {
-        throw new Error(lang === 'pt' ? 'Erro ao carregar dados do tempo!' : 'Error loading weather data!');
+        return Promise.reject(lang === 'pt' ? 'Erro ao carregar dados do tempo!' : 'Error loading weather data!');
     }
 }
 
@@ -79,7 +79,7 @@ async function fetchAPIWeatherData(endpoint, lang) {
         const response = await axios.get(endpoint);
         return response;
     } catch (error) {
-        throw new Error(
+        return Promise.reject(
             lang === 'pt' ? 'Erro ao carregar tempo da API Externa!' : 'Error loading weather from External API!',
         );
     }
@@ -216,10 +216,13 @@ async function getAPIWeather(cityCode, unit, lang, res, db) {
             await saveWeatherData(cityCode, unit, lang, weather, db);
             return res.json(weather);
         } else {
-            throw new Error(lang === 'pt' ? 'Erro ao carregar dados do tempo!' : 'Error loading weather data!');
+            res.status(500).json({
+                message: lang === 'pt' ? 'Erro ao carregar dados do tempo!' : 'Error loading weather data!',
+            });
         }
     } catch (error) {
-        return Promise.reject(error);
+        console.error(error);
+        res.status(500).json({ message: error });
     }
 }
 
