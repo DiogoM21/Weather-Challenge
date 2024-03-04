@@ -260,7 +260,7 @@ function getIconWind(deg) {
                 </div>
             </div>
         </div>
-        <div class="flex justify-center md:justify-end my-2 w-full px-8">
+        <div class="flex justify-center md:justify-end my-4 lg:my-2 w-full px-8">
             <span
                 class="text-md font-semibold text-gray-700 dark:text-slate-400"
                 :title="mainStore.lang === 'pt' ? 'Atualizado em' : 'Updated at'"
@@ -270,8 +270,8 @@ function getIconWind(deg) {
         <BaseIcon
             :path="showNext ? mdiArrowUp : mdiArrowDown"
             :size="24"
-            :title="mainStore.lang === 'pt' ? 'Mostrar / Ocultar' : 'Show / Hide'"
-            class="mt-2 md:-mt-2 hover:text-blue-700 dark:hover:text-sky-500 transition-all hover:scale-110 cursor-pointer"
+            :title="mainStore.lang === 'pt' ? 'Mostrar / Ocultar Tempo' : 'Show / Hide Weather'"
+            class="mt-2 md:-mt-4 hover:text-blue-700 dark:hover:text-sky-500 transition-all hover:scale-110 cursor-pointer"
             @click="toggleNext"
         />
         <div v-if="showNext" class="w-full px-6">
