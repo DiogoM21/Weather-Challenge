@@ -18,6 +18,7 @@ import {
 import CardBox from './CardBox.vue';
 import BaseIcon from './BaseIcon.vue';
 import FormField from './FormField.vue';
+import NextWeatherCard from './NextWeatherCard.vue';
 import { useMainStore } from '@/stores/main';
 import { useCityStore } from '@/stores/city';
 import { useWeatherStore } from '@/stores/weather';
@@ -217,11 +218,19 @@ function getIconWind(deg) {
             </div>
         </div>
         <template #footer>
-            <div class="flex justify-end">
-                <span class="text-sm font-semibold text-gray-700 dark:text-slate-400">{{
-                    weather?.info.created_at ?? null
-                }}</span>
+            <div class="flex justify-center md:justify-end">
+                <span
+                    class="text-md font-semibold text-gray-700 dark:text-slate-400"
+                    :title="mainStore.lang === 'pt' ? 'Atualizado em' : 'Updated at'"
+                    >{{ weather?.info.date_time ?? null }}</span
+                >
             </div>
+            <hr class="my-6 border-t-2 border-gray-300 dark:border-slate-500" />
+            <NextWeatherCard
+                :next-weather="weather?.next"
+                :is-refreshing="isRefreshing"
+                :selected-unit="selectedUnit"
+            />
         </template>
     </CardBox>
 </template>

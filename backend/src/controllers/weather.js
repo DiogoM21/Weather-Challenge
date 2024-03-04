@@ -41,6 +41,8 @@ function checkDatabase(cityCode, unit, lang, db, callback) {
                     }).format(new Date(results[0].created_at)),
                 },
             });
+
+            // TODO: Load next weather data
         } else {
             callback(null, null);
         }
@@ -61,6 +63,8 @@ function deleteOldWeatherData(cityCode, unit, lang, db) {
             }
         }
     });
+
+    // TODO: Delete next weather data
 }
 
 // Save weather data to database
@@ -107,44 +111,74 @@ function saveWeatherData(cityCode, unit, lang, weather, db) {
                     }
                 },
             );
+
+            // TODO: Save next weather data
         }
     });
 }
 
 // Current weather method
-async function getCurrentWeather(cityCode, unit, lang, res, db) {
+async function getWeather(cityCode, unit, lang, res, db) {
     try {
-        const externalApiResponse = await axios.get(
+        // Current weather from API
+        const currentRes = await axios.get(
             `${weatherApiUrl}/weather?id=${cityCode}&appid=${weatherApiKey}&units=${unit}&lang=${lang}`,
         );
+
+        // Next weather from API
+        const nextRes = await axios.get(
+            `${weatherApiUrl}/forecast?id=${cityCode}&appid=${weatherApiKey}&units=${unit}&lang=${lang}&cnt=10`,
+        );
+
         const weather = {
             values: {
-                temp: externalApiResponse.data.main.temp,
-                humidity: externalApiResponse.data.main.humidity,
-                wind: externalApiResponse.data.wind.speed,
-                deg: externalApiResponse.data.wind.deg,
+                temp: currentRes.data.main.temp,
+                humidity: currentRes.data.main.humidity,
+                wind: currentRes.data.wind.speed,
+                deg: currentRes.data.wind.deg,
             },
             info: {
-                name: externalApiResponse.data.name,
+                name: currentRes.data.name,
                 description:
-                    externalApiResponse.data.weather[0].description.charAt(0).toUpperCase() +
-                    externalApiResponse.data.weather[0].description.slice(1),
-                icon: externalApiResponse.data.weather[0].icon,
-                dt: externalApiResponse.data.dt,
-                created_at: new Intl.DateTimeFormat(lang === 'pt' ? 'pt-PT' : 'en-US', {
+                    currentRes.data.weather[0].description.charAt(0).toUpperCase() +
+                    currentRes.data.weather[0].description.slice(1),
+                icon: currentRes.data.weather[0].icon,
+                dt: currentRes.data.dt,
+                date_time: new Intl.DateTimeFormat(lang === 'pt' ? 'pt-PT' : 'en-US', {
                     hour: '2-digit',
                     minute: '2-digit',
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
-                }).format(new Date(externalApiResponse.data.dt * 1000)),
+                }).format(new Date(currentRes.data.dt * 1000)),
             },
+            next: nextRes.data.list.map((item) => {
+                return {
+                    values: {
+                        temp: item.main.temp,
+                    },
+                    info: {
+                        description:
+                            item.weather[0].description.charAt(0).toUpperCase() + item.weather[0].description.slice(1),
+                        icon: item.weather[0].icon,
+                        dt: item.dt,
+                        date_time: new Intl.DateTimeFormat(lang === 'pt' ? 'pt-PT' : 'en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric',
+                        }).format(new Date(item.dt * 1000)),
+                    },
+                };
+            }),
         };
 
         // Delete old data from database
         deleteOldWeatherData(cityCode, unit, lang, db);
         // Save data to database
         saveWeatherData(cityCode, unit, lang, weather, db);
+
         return res.json(weather);
     } catch (error) {
         console.error(`Error fetching data from ${weatherApiName} API:`, error);
@@ -154,5 +188,5 @@ async function getCurrentWeather(cityCode, unit, lang, res, db) {
 
 module.exports = {
     checkDatabase,
-    getCurrentWeather,
+    getWeather,
 };

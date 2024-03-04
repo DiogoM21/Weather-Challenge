@@ -103,11 +103,11 @@ router.get('/:id/current', (req, res) => {
                 } else if (weather) {
                     return res.json(weather);
                 } else {
-                    return weatherController.getCurrentWeather(cityCode, unit, lang, res, req.db);
+                    return weatherController.getWeather(cityCode, unit, lang, res, req.db);
                 }
             });
         } else {
-            return weatherController.getCurrentWeather(cityCode, unit, lang, res, req.db);
+            return weatherController.getWeather(cityCode, unit, lang, res, req.db);
         }
     });
 });
