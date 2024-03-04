@@ -74,7 +74,7 @@ router.get('/:id/weather', async (req, res) => {
             }
         }
         // Get weather from External API
-        return weatherController.getAPIWeather(cityCode, unit, lang, req.db, res);
+        return weatherController.getAPIWeather(cityCode, unit, lang, res, req.db);
     } catch (error) {
         console.error(error);
         return res.status(500).json({ message: error });
