@@ -28,7 +28,9 @@ const cityStore = useCityStore();
 const weatherStore = useWeatherStore();
 
 const weather = ref(null);
+const filteredNextWeather = ref(null);
 const isRefreshing = ref(false);
+const showNext = ref(true);
 
 const selectUnits = [
     { label: 'Celsius', value: 'metric', icon: mdiTemperatureCelsius },
@@ -39,6 +41,7 @@ const selectUnits = [
 const selectCities = ref(null);
 const selectedCity = ref(null);
 const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.selectedUnit).value);
+const selectedCount = ref(5);
 
 async function getCities(force = false) {
     isRefreshing.value = true;
@@ -72,6 +75,7 @@ async function getAPIWeather(force = false) {
         .then((data) => {
             if (data) {
                 weather.value = data;
+                filteredNextWeather.value = data.next.slice(0, selectedCount.value);
             }
         })
         .finally(() => {
@@ -87,7 +91,24 @@ watch([() => mainStore.lang, () => selectedCity.value, () => selectedUnit.value]
     await getAPIWeather();
 });
 
+watch([() => selectedCount.value], () => {
+    if (selectedCount.value === 0) {
+        toggleNext();
+    }
+    filteredNextWeather.value = weather?.value.next.slice(0, selectedCount.value);
+});
+
+function toggleNext() {
+    showNext.value = !showNext.value;
+    if (!showNext.value) {
+        selectedCount.value = 5;
+    }
+}
+
 function getTempColor(temp) {
+    if (isRefreshing.value) {
+        return 'text-black dark:text-white';
+    }
     let cold = 'text-blue-700 dark:text-blue-500';
     let hot = 'text-red-700 dark:text-red-500';
     let warm = 'text-yellow-700 dark:text-yellow-500';
@@ -239,21 +260,30 @@ function getIconWind(deg) {
                 </div>
             </div>
         </div>
-        <template #footer>
-            <div class="flex justify-center md:justify-end my-1">
-                <span
-                    class="text-md font-semibold text-gray-700 dark:text-slate-400"
-                    :title="mainStore.lang === 'pt' ? 'Atualizado em' : 'Updated at'"
-                    >{{ weather?.info.date_time ?? null }}</span
-                >
-            </div>
-            <hr class="my-6 border-t-2 border-gray-300 dark:border-slate-500" />
+        <div class="flex justify-center md:justify-end my-2 w-full px-8">
+            <span
+                class="text-md font-semibold text-gray-700 dark:text-slate-400"
+                :title="mainStore.lang === 'pt' ? 'Atualizado em' : 'Updated at'"
+                >{{ weather?.info.date_time ?? null }}</span
+            >
+        </div>
+        <BaseIcon
+            :path="showNext ? mdiArrowUp : mdiArrowDown"
+            :size="24"
+            :title="mainStore.lang === 'pt' ? 'Mostrar / Ocultar' : 'Show / Hide'"
+            class="mt-2 md:-mt-2 hover:text-blue-700 dark:hover:text-sky-500 transition-all hover:scale-110 cursor-pointer"
+            @click="toggleNext"
+        />
+        <div v-if="showNext" class="w-full px-6">
+            <hr class="border-t-2 border-gray-300 dark:border-slate-500 my-4" />
             <NextWeatherCard
-                :next-weather="weather?.next"
+                :next-weather="filteredNextWeather"
                 :is-refreshing="isRefreshing"
                 :selected-unit="selectedUnit"
                 :lang="mainStore.lang"
-            />
-        </template>
+            >
+                <FormField v-model="selectedCount" type="numberButton" :disabled="isRefreshing" :min="0" :max="10" />
+            </NextWeatherCard>
+        </div>
     </CardBox>
 </template>

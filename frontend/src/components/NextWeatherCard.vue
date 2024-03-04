@@ -1,8 +1,8 @@
 <script setup>
 const props = defineProps({
     nextWeather: {
-        type: Object,
-        default: null,
+        type: Array,
+        default: () => [],
     },
     isRefreshing: {
         type: Boolean,
@@ -19,6 +19,9 @@ const props = defineProps({
 });
 
 function getTempColor(temp) {
+    if (props.isRefreshing) {
+        return 'text-black dark:text-white';
+    }
     let cold = 'text-blue-700 dark:text-blue-500';
     let hot = 'text-red-700 dark:text-red-500';
     let warm = 'text-yellow-700 dark:text-yellow-500';
@@ -70,10 +73,10 @@ function getTitle(values, description) {
 </script>
 
 <template>
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
-        <div v-for="weather in nextWeather" :key="weather?.info.dt">
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 py-5" :class="{ 'animate-pulse': isRefreshing }">
+        <div v-for="weather in nextWeather" :key="weather.info.dt" class="animate-fade-in">
             <div
-                :title="getTitle(weather?.values, weather?.info.description)"
+                :title="getTitle(weather.values, weather.info.description)"
                 class="flex flex-col items-center justify-center bg-slate-200/40 dark:bg-gray-800 rounded-lg p-4 shadow-md hover:shadow-lg transition duration-300 hover:scale-105"
             >
                 <div>
@@ -96,4 +99,5 @@ function getTitle(values, description) {
             </div>
         </div>
     </div>
+    <slot />
 </template>

@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import { mdiMinus, mdiPlus } from '@mdi/js';
 import BaseIcon from './BaseIcon.vue';
 
 const props = defineProps({
@@ -18,6 +19,14 @@ const props = defineProps({
     label: {
         type: String,
         default: null,
+    },
+    min: {
+        type: Number,
+        default: 0,
+    },
+    max: {
+        type: Number,
+        default: 10,
     },
     icon: {
         type: String,
@@ -49,7 +58,7 @@ const computedValue = computed({
                     :id="label"
                     :value="computedValue"
                     :disabled="disabled || (options && options.length === 0)"
-                    class="px-2 py-1 pl-9 min-w-44 max-w-full bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg w-full"
+                    class="px-2 py-1 pl-9 min-w-44 max-w-full bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg"
                     :class="disabled || (options && options.length === 0) ? 'cursor-not-allowed' : 'cursor-pointer'"
                     @input="computedValue = $event.target.value"
                 >
@@ -57,7 +66,31 @@ const computedValue = computed({
                         {{ option.label }}
                     </option>
                 </select>
-                <BaseIcon :path="icon" :size="16" class="absolute top-1.5 left-2 z-10 pointer-events-none" />
+                <div
+                    v-if="type === 'numberButton'"
+                    class="flex flex-row items-center gap-4 justify-center my-auto"
+                    :class="{ 'animate-pulse': disabled }"
+                >
+                    <BaseIcon
+                        :path="mdiMinus"
+                        :size="16"
+                        :class="disabled ? 'cursor-not-allowed' : 'cursor-pointer'"
+                        @click="disabled || (computedValue - 1 >= min && (computedValue -= 1))"
+                    />
+                    <span class="text-lg font-medium text-center w-5">{{ computedValue }}</span>
+                    <BaseIcon
+                        :path="mdiPlus"
+                        :size="16"
+                        :class="disabled ? 'cursor-not-allowed' : 'cursor-pointer'"
+                        @click="disabled || (computedValue + 1 <= max && (computedValue += 1))"
+                    />
+                </div>
+                <BaseIcon
+                    v-if="icon"
+                    :path="icon"
+                    :size="16"
+                    class="absolute top-1.5 left-2 z-10 pointer-events-none"
+                />
             </div>
         </div>
     </div>

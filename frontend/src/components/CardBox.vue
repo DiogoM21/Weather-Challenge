@@ -20,7 +20,7 @@ const hasFooter = computed(() => slots.footer && !!slots.footer());
         @submit="emit('submit')"
     >
         <slot />
-        <footer v-if="hasFooter" class="px-6 mt-4 lg:mt-0 w-full">
+        <footer v-if="hasFooter" class="px-6 w-full">
             <slot name="footer" />
         </footer>
     </component>
