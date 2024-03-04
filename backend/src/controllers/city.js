@@ -2,48 +2,84 @@ const express = require('express');
 const router = express.Router();
 const weatherController = require('./weather');
 
-// Cities
-const cities = [
-    { name: 'Lisboa', id: 2267056 },
-    { name: 'Leiria', id: 2267094 },
-    { name: 'Coimbra', id: 2740636 },
-    { name: 'Porto', id: 2735941 },
-    { name: 'Faro', id: 2268337 },
-];
+// Method to get cities from database
+function getCities(lang, db, callback) {
+    const query = 'SELECT * FROM cities';
+    const cities = [];
+
+    // Fetch cities from database
+    db.query(query, (error, results) => {
+        if (error) {
+            switch (lang) {
+                case 'pt':
+                    callback({ message: 'Erro ao carregar cidades!' }, null);
+                    break;
+                default:
+                    callback({ message: 'Error loading cities!' }, null);
+            }
+        } else {
+            results.forEach((city) => {
+                cities.push(city);
+            });
+            callback(null, cities);
+        }
+    });
+}
 
 // Method to validate cityId
-const validateCityId = (cityId, lang) => {
+function validateCityId(cityId, lang, db, callback) {
+    // Check if cityId is a number
     if (isNaN(cityId)) {
+        let message;
         switch (lang) {
             case 'pt':
-                return { error: 'ID de cidade inválido. Deve ser um número!' };
-            default:
-                return { error: 'Invalid city ID. Must be a number!' };
-        }
-    }
-    if (!cities.find((city) => city.id === parseInt(cityId))) {
-        let errorMsg;
-        switch (lang) {
-            case 'pt':
-                errorMsg = 'ID de cidade inválido. Deve ser um ID de cidade válido!';
+                message = 'Código de cidade deve ser um número!';
                 break;
             default:
-                errorMsg = 'Invalid city ID. Must be a valid city ID!';
+                message = 'City code must be a number!';
         }
-
-        return {
-            message: errorMsg,
-            valid: cities.map((city) => city),
-        };
+        callback({ message });
+    } else {
+        // Get cities from database
+        getCities(lang, db, (error, cities) => {
+            if (error) {
+                callback(error);
+            } else {
+                // Check if cityId is valid
+                if (!cities.find((city) => city.code === parseInt(cityId))) {
+                    let message;
+                    switch (lang) {
+                        case 'pt':
+                            message = 'Código de cidade não é válido!';
+                            break;
+                        default:
+                            message = 'City code is not valid!';
+                    }
+                    callback({ message });
+                }
+                callback(null, cities);
+            }
+        });
     }
-    return null;
-};
+}
 
-// Cities route
+// Cities from database route
 router.get('/', (req, res) => {
-    res.json({
-        cities: cities.map((city) => ({ name: city.name, id: city.id })),
-        count: cities.length,
+    const lang = req.query.lang || 'en';
+    getCities(lang, req.db, (error, cities) => {
+        if (error) {
+            console.error(error.message);
+            res.status(500).send(error);
+        } else {
+            res.json({
+                cities: cities.map((city) => {
+                    return {
+                        label: city.name,
+                        value: city.code,
+                    };
+                }),
+            });
+        }
     });
 });
 
@@ -55,20 +91,19 @@ router.get('/:id/current', (req, res) => {
     const force = req.query.force || false;
 
     // Validate cityId
-    let invalid = validateCityId(cityId, lang);
-    if (invalid) {
-        return res.status(400).json(invalid);
-    }
-
-    if (!force) {
-        // Check if city is already in storage
-        const storage = weatherController.checkStorage(cityId, unit, lang);
-        if (storage) {
-            return res.json(storage);
+    validateCityId(cityId, lang, req.db, (error) => {
+        if (error) {
+            return res.status(400).json({ message: error.message });
         }
-    }
-
-    return weatherController.getCurrentWeather(cityId, unit, lang, res);
+        if (!force) {
+            // Check if city is already in storage
+            const storage = weatherController.checkStorage(cityId, unit, lang);
+            if (storage) {
+                return res.json(storage);
+            }
+        }
+        return weatherController.getCurrentWeather(cityId, unit, lang, res);
+    });
 });
 
 module.exports = router;
