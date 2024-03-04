@@ -141,7 +141,7 @@ function getIconWind(deg) {
 <template>
     <CardBox :updated="weather?.info.dt">
         <div class="flex flex-col lg:flex-row items-center justify-evenly w-full text-black dark:text-white">
-            <div class="flex flex-row lg:flex-col mb-6 lg:mb-0 items-center gap-4 justify-center">
+            <div class="flex flex-row lg:flex-col mb-6 my-1 lg:mb-0 items-center gap-3 md:gap-4 justify-center">
                 <FormField
                     v-model="selectedCity"
                     type="select"
@@ -160,7 +160,7 @@ function getIconWind(deg) {
                 />
             </div>
             <div
-                class="flex flex-row items-center gap-0 md:gap-4 justify-center"
+                class="flex flex-col md:flex-row items-center gap-0 md:gap-4 justify-center"
                 :class="isRefreshing ? 'animate-pulse' : ''"
             >
                 <div>
@@ -172,7 +172,7 @@ function getIconWind(deg) {
                         "
                         :alt="weather?.info.description"
                         :title="weather?.info.description"
-                        class="w-20 h-20 md:w-32 md:h-32"
+                        class="w-24 h-24 md:w-32 md:h-32 -mt-4 md:mt-0"
                     />
                 </div>
                 <div>
@@ -180,11 +180,18 @@ function getIconWind(deg) {
                         <span class="text-3xl md:text-4xl">{{
                             weather?.info.name ?? (mainStore.lang === 'pt' ? 'Cidade' : 'City')
                         }}</span>
-                        <span class="text-3xl md:text-4xl font-bold" :class="getTempColor(weather?.values.temp)"
+                        <span
+                            class="text-3xl md:text-4xl font-bold"
+                            :class="getTempColor(weather?.values.temp)"
+                            :title="
+                                (mainStore.lang === 'pt' ? 'Parece: ' : 'Feels like: ') +
+                                (weather?.values.feels_like ?? 0) +
+                                getUnitSymbol()
+                            "
                             >{{ weather?.values.temp ?? 0 }}{{ getUnitSymbol() }}</span
                         >
                     </div>
-                    <div class="flex flex-row items-center gap-4 justify-center mt-4">
+                    <div class="flex flex-row items-center gap-2 md:gap-4 justify-center mt-4">
                         <span class="text-md md:text-xl text-gray-800 dark:text-gray-400"
                             >{{ mainStore.lang === 'pt' ? 'Vento' : 'Wind' }}: {{ weather?.values.wind ?? 0
                             }}{{ getWindSymbol() }}</span
@@ -218,7 +225,7 @@ function getIconWind(deg) {
             </div>
         </div>
         <template #footer>
-            <div class="flex justify-center md:justify-end">
+            <div class="flex justify-center md:justify-end my-1">
                 <span
                     class="text-md font-semibold text-gray-700 dark:text-slate-400"
                     :title="mainStore.lang === 'pt' ? 'Atualizado em' : 'Updated at'"
@@ -230,6 +237,7 @@ function getIconWind(deg) {
                 :next-weather="weather?.next"
                 :is-refreshing="isRefreshing"
                 :selected-unit="selectedUnit"
+                :lang="mainStore.lang"
             />
         </template>
     </CardBox>

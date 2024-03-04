@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Tempo de geração: 04-Mar-2024 às 02:40
+-- Tempo de geração: 04-Mar-2024 às 16:10
 -- Versão do servidor: 11.3.2-MariaDB-1:11.3.2+maria~ubu2204
 -- versão do PHP: 8.2.8
 
@@ -56,6 +56,7 @@ CREATE TABLE `weather` (
   `unit` varchar(20) NOT NULL,
   `lang` varchar(5) NOT NULL,
   `temp` decimal(10,0) NOT NULL,
+  `feels_like` decimal(10,0) NOT NULL,
   `humidity` decimal(10,0) NOT NULL,
   `wind` decimal(10,0) NOT NULL,
   `deg` int(10) NOT NULL,
@@ -98,7 +99,7 @@ ALTER TABLE `cities`
 -- AUTO_INCREMENT de tabela `weather`
 --
 ALTER TABLE `weather`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Restrições para despejos de tabelas

@@ -23,6 +23,7 @@ function checkDatabase(cityCode, unit, lang, db, callback) {
             callback(null, {
                 values: {
                     temp: results[0].temp,
+                    feels_like: results[0].feels_like,
                     humidity: results[0].humidity,
                     wind: results[0].wind,
                     deg: results[0].deg,
@@ -84,7 +85,7 @@ function saveWeatherData(cityCode, unit, lang, weather, db) {
             const cityId = results[0].id;
             // Save weather data
             const insertQuery =
-                'INSERT INTO weather (city_id, unit, lang, temp, humidity, wind, deg, description, icon, dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+                'INSERT INTO weather (city_id, unit, lang, temp, feels_like, humidity, wind, deg, description, icon, dt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
             db.query(
                 insertQuery,
                 [
@@ -92,6 +93,7 @@ function saveWeatherData(cityCode, unit, lang, weather, db) {
                     unit,
                     lang,
                     weather.values.temp,
+                    weather.values.feels_like,
                     weather.values.humidity,
                     weather.values.wind,
                     weather.values.deg,
@@ -133,6 +135,7 @@ async function getWeather(cityCode, unit, lang, res, db) {
         const weather = {
             values: {
                 temp: currentRes.data.main.temp,
+                feels_like: currentRes.data.main.feels_like,
                 humidity: currentRes.data.main.humidity,
                 wind: currentRes.data.wind.speed,
                 deg: currentRes.data.wind.deg,
@@ -156,6 +159,10 @@ async function getWeather(cityCode, unit, lang, res, db) {
                 return {
                     values: {
                         temp: item.main.temp,
+                        feels_like: item.main.feels_like,
+                        humidity: item.main.humidity,
+                        wind: item.wind.speed,
+                        deg: item.wind.deg,
                     },
                     info: {
                         description:

@@ -12,6 +12,10 @@ const props = defineProps({
         type: String,
         default: 'metric',
     },
+    lang: {
+        type: String,
+        default: 'en',
+    },
 });
 
 function getTempColor(temp) {
@@ -42,12 +46,36 @@ function getUnitSymbol() {
             return '°C';
     }
 }
+
+function getWindSymbol() {
+    switch (props.selectedUnit) {
+        case 'imperial':
+            return 'mph';
+        case 'metric':
+        case 'default':
+            return 'm/s';
+        default:
+            return 'm/s';
+    }
+}
+
+function getTitle(values, description) {
+    switch (props.lang) {
+        case 'pt':
+            return `${description ?? 'Descrição'}\nParece: ${values.feels_like ?? 0}${getUnitSymbol()}\nVento: ${values.wind ?? 0}${getWindSymbol()} ${values.deg ?? 0}º\nHumidade: ${values.humidity ?? 0}%`;
+        default:
+            return `${description ?? 'Description'}\nFeels like: ${values.feels_like ?? 0}${getUnitSymbol()}\nWind: ${values.wind ?? 0}${getWindSymbol()} ${values.deg ?? 0}º\nHumidity: ${values.humidity ?? 0}%`;
+    }
+}
 </script>
 
 <template>
-    <div class="scrollable grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
+    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mt-4">
         <div v-for="weather in nextWeather" :key="weather?.info.dt">
-            <div class="flex flex-col items-center justify-center">
+            <div
+                :title="getTitle(weather?.values, weather?.info.description)"
+                class="flex flex-col items-center justify-center bg-slate-200/40 dark:bg-gray-800 rounded-lg p-4 shadow-md hover:shadow-lg transition duration-300 hover:scale-105"
+            >
                 <div>
                     <img
                         :src="
@@ -56,14 +84,15 @@ function getUnitSymbol() {
                                 : require('@/assets/weather.png')
                         "
                         :alt="weather?.info.description"
-                        :title="weather?.info.description"
-                        class="w-12 h-12 md:w-18 md:h-18"
+                        class="w-12 h-12 md:w-18 md:h-18 -mt-2"
                     />
                 </div>
                 <span class="text-sm md:text-md font-bold" :class="getTempColor(weather?.values.temp)"
                     >{{ weather?.values.temp ?? 0 }}{{ getUnitSymbol() }}</span
                 >
-                <span class="text-sm md:text-md text-gray-800 dark:text-gray-400">{{ weather?.info.date_time }}</span>
+                <span class="text-sm md:text-md font-medium text-gray-800 dark:text-gray-400">{{
+                    weather?.info.date_time
+                }}</span>
             </div>
         </div>
     </div>
