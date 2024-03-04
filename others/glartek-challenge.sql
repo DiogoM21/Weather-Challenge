@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Tempo de geração: 04-Mar-2024 às 22:35
+-- Tempo de geração: 04-Mar-2024 às 23:26
 -- Versão do servidor: 11.3.2-MariaDB-1:11.3.2+maria~ubu2204
 -- versão do PHP: 8.2.8
 
@@ -55,8 +55,8 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `unit` enum('metric','default','imperial') NOT NULL,
-  `lang` enum('pt','en') NOT NULL,
+  `unit` enum('metric','default','imperial') NOT NULL DEFAULT 'metric',
+  `lang` enum('pt','en') NOT NULL DEFAULT 'en',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -150,19 +150,19 @@ ALTER TABLE `cities`
 -- AUTO_INCREMENT de tabela `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `weather`
 --
 ALTER TABLE `weather`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=152;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
 
 --
 -- AUTO_INCREMENT de tabela `weather_next`
 --
 ALTER TABLE `weather_next`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1332;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1362;
 
 --
 -- Restrições para despejos de tabelas

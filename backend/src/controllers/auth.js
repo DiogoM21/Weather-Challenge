@@ -4,13 +4,16 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
+// Secret for JWT
+const JWT_SECRET = 'OW-SECRET';
+
 // Function to check user
-async function checkUser(lang, db) {
+async function checkUser(email, lang, db) {
     // Get user from database
     const query = 'SELECT * FROM users WHERE email = ?';
     const queryPromise = util.promisify(db.query).bind(db);
     try {
-        const results = await queryPromise(query);
+        const results = await queryPromise(query, [email]);
         return results[0];
     } catch (error) {
         return Promise.reject(lang === 'pt' ? 'Erro ao verificar utilizador!' : 'Error checking user!');
@@ -33,16 +36,17 @@ async function registerUser(email, hashedPassword, name, unit, lang, db) {
 // Login route
 router.post('/login', async (req, res) => {
     const lang = req.query.lang || 'en';
-    const { email, password } = req.body;
     try {
+        const { email, password } = req.body;
         // Check if email and password are not null
         if (!email || !password) {
             return res.status(400).json({
-                message: lang === 'pt' ? 'E-mail e palavra-passe são obrigatórios' : 'Email and password are required',
+                message:
+                    lang === 'pt' ? 'E-mail e palavra-passe são obrigatórios!' : 'Email and password are required!',
             });
         }
         // Get user from database
-        const user = await checkUser(lang, req.db);
+        const user = await checkUser(email, lang, req.db);
         // Check if user exists and password is correct
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res
@@ -50,7 +54,7 @@ router.post('/login', async (req, res) => {
                 .json({ message: lang === 'pt' ? 'E-mail ou palavra-passe inválidos!' : 'Invalid email or password!' });
         }
         // Create token
-        const accessToken = jwt.sign({ email: user.email }, process.env.JWT_SECRET);
+        const accessToken = jwt.sign({ email: user.email }, JWT_SECRET);
         res.json({ accessToken });
     } catch (error) {
         console.error(error);
@@ -61,16 +65,17 @@ router.post('/login', async (req, res) => {
 // Register route
 router.post('/register', async (req, res) => {
     const lang = req.query.lang || 'en';
-    const { email, password, name, unit } = req.body;
     try {
+        const { email, password, name, unit } = req.body;
         // Check if email and password are not null
         if (!email || !password) {
             return res.status(400).json({
-                message: lang === 'pt' ? 'E-mail e palavra-passe são obrigatórios' : 'Email and password are required',
+                message:
+                    lang === 'pt' ? 'E-mail e palavra-passe são obrigatórios!' : 'Email and password are required!',
             });
         }
         // Check if user already exists
-        const user = await checkUser(lang, req.db);
+        const user = await checkUser(email, lang, req.db);
         if (user) {
             return res.status(400).json({
                 message: lang === 'pt' ? 'Este e-mail já está registado!' : 'This email is already registered!',

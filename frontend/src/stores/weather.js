@@ -7,7 +7,7 @@ import { ref } from 'vue';
 const $toast = useToast();
 
 // Back-End API URL
-const backendUrl = 'http://localhost:3000';
+const BACKENDURL = 'http://localhost:3000';
 
 const mainStore = useMainStore();
 
@@ -64,7 +64,7 @@ export const useWeatherStore = defineStore('weather', () => {
         try {
             // Get data from API and save it to storage
             const apiResponse = await axios.get(
-                `${backendUrl}/cities/${selectedCity.value}/weather?unit=${selectedUnit.value}&lang=${mainStore.lang}&force=${force}`,
+                `${BACKENDURL}/cities/${selectedCity.value}/weather?unit=${selectedUnit.value}&lang=${mainStore.lang}&force=${force}`,
             );
             if (apiResponse.data.values) {
                 storeWeather(apiResponse.data);

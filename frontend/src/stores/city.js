@@ -6,7 +6,7 @@ import axios from 'axios';
 const $toast = useToast();
 
 // Back-End API URL
-const backendUrl = 'http://localhost:3000';
+const BACKENDURL = 'http://localhost:3000';
 
 const mainStore = useMainStore();
 
@@ -56,7 +56,7 @@ export const useCityStore = defineStore('city', () => {
         }
         try {
             // Get data from API and save it to storage
-            const apiResponse = await axios.get(`${backendUrl}/cities?lang=${mainStore.lang}`);
+            const apiResponse = await axios.get(`${BACKENDURL}/cities?lang=${mainStore.lang}`);
             if (apiResponse.data.cities && apiResponse.data.cities.length > 0) {
                 storeCities(apiResponse.data.cities);
             }

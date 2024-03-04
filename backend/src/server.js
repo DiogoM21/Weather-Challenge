@@ -4,7 +4,7 @@ const mysql = require('mysql');
 const app = express();
 
 // Port
-const port = 3000;
+const PORT = 3000;
 
 // MySQL Connection
 const db = mysql.createConnection({
@@ -37,6 +37,7 @@ connectWithRetry(db).then(() => {
     });
 
     // Middleware
+    app.use(express.json());
     app.use(cors());
 
     // Controllers
@@ -50,7 +51,7 @@ connectWithRetry(db).then(() => {
     app.use('/cities', cityController);
 
     // Start the server
-    app.listen(port, () => {
-        console.log(`Server is listening at http://localhost:${port}`);
+    app.listen(PORT, () => {
+        console.log(`Server is listening at http://localhost:${PORT}`);
     });
 });

@@ -1,9 +1,9 @@
 const axios = require('axios');
 const util = require('util');
 
-// Import environment variables
-const weatherApiUrl = 'https://api.openweathermap.org/data/2.5';
-const weatherApiKey = '519af113678c353b1ae6ef8ce8c10803';
+// Weather API URL and Key
+const WEATHERAPIURL = 'https://api.openweathermap.org/data/2.5';
+const WEATHERAPIKEY = '519af113678c353b1ae6ef8ce8c10803';
 
 // Function to format date and time
 function formatDateTime(dt, lang) {
@@ -162,11 +162,11 @@ async function getAPIWeather(cityCode, unit, lang, res, db) {
     try {
         // Get weather data from external API
         const currentRes = await fetchAPIWeatherData(
-            `${weatherApiUrl}/weather?id=${cityCode}&appid=${weatherApiKey}&units=${unit}&lang=${lang}`,
+            `${WEATHERAPIURL}/weather?id=${cityCode}&appid=${WEATHERAPIKEY}&units=${unit}&lang=${lang}`,
             lang,
         );
         const nextRes = await fetchAPIWeatherData(
-            `${weatherApiUrl}/forecast?id=${cityCode}&appid=${weatherApiKey}&units=${unit}&lang=${lang}&cnt=10`,
+            `${WEATHERAPIURL}/forecast?id=${cityCode}&appid=${WEATHERAPIKEY}&units=${unit}&lang=${lang}&cnt=10`,
             lang,
         );
 
