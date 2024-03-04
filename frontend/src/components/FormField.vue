@@ -23,9 +23,13 @@ const props = defineProps({
         type: String,
         default: null,
     },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
 });
 
-const emit = defineEmits(['update:modelValue', 'setRef']);
+const emit = defineEmits(['update:modelValue']);
 
 const computedValue = computed({
     get: () => props.modelValue,
@@ -44,7 +48,9 @@ const computedValue = computed({
                     v-if="type === 'select'"
                     :id="label"
                     :value="computedValue"
-                    class="px-2 py-1 pl-9 min-w-44 max-w-full bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg w-full cursor-pointer"
+                    :disabled="disabled || (options && options.length === 0)"
+                    class="px-2 py-1 pl-9 min-w-44 max-w-full bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg w-full"
+                    :class="disabled || (options && options.length === 0) ? 'cursor-not-allowed' : 'cursor-pointer'"
                     @input="computedValue = $event.target.value"
                 >
                     <option v-for="option in options" :key="option.id" :value="option.value">

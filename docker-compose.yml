@@ -7,8 +7,8 @@ services:
       MYSQL_DATABASE: glartek-challenge
       MYSQL_USER: admin
       MYSQL_PASSWORD: root
-    #volumes:
-    #  - "db.sql:/docker-entrypoint-initdb.d"
+    volumes:
+      - "./others/glartek-challenge.sql:/docker-entrypoint-initdb.d/glartek-challenge.sql"
 
   # PhpMyAdmin (PhpMyAdmin)
   phpmyadmin:

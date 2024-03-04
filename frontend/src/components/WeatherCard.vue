@@ -5,12 +5,14 @@ import CardBox from './CardBox.vue';
 import BaseIcon from './BaseIcon.vue';
 import FormField from './FormField.vue';
 import { useMainStore } from '@/stores/main';
+import { useCityStore } from '@/stores/city';
 import { useWeatherStore } from '@/stores/weather';
 
 const mainStore = useMainStore();
+const cityStore = useCityStore();
 const weatherStore = useWeatherStore();
 
-const weather = ref(weatherStore.weather);
+const weather = ref(null);
 const isRefreshing = ref(false);
 
 const selectUnits = [
@@ -19,38 +21,65 @@ const selectUnits = [
     { label: 'Fahrenheit', value: 'imperial', icon: mdiTemperatureFahrenheit },
 ];
 
-const selectCities = [
-    { label: 'Leiria', value: '2267094' },
-    { label: 'Lisboa', value: '2267056' },
-    { label: 'Coimbra', value: '2740636' },
-    { label: 'Porto', value: '2735941' },
-    { label: 'Faro', value: '2268337' },
-];
+const selectCities = ref(null);
+const selectedCity = ref(null);
+const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.selectedUnit).value);
 
-const selectedCity = ref('2267094');
-const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.unit).value);
+async function getCities(force = false) {
+    isRefreshing.value = true;
+    await cityStore
+        .getCities(force)
+        .then((cities) => {
+            if (cities && cities.length > 0) {
+                selectCities.value = cities;
+                selectedCity.value = cities[0].value;
+                if (force) {
+                    getCurrentWeather(true);
+                }
+            }
+        })
+        .finally(() => {
+            isRefreshing.value = false;
+        });
+}
 
 async function getCurrentWeather(force = false) {
     isRefreshing.value = true;
-    try {
-        weather.value = await weatherStore.getCurrentWeather(
-            selectedCity.value,
-            selectedUnit.value,
-            mainStore.lang,
-            force,
-        );
-    } finally {
-        isRefreshing.value = false;
-    }
+    weatherStore
+        .getCurrentWeather(selectedCity.value, selectedUnit.value, force)
+        .then((data) => {
+            if (data) {
+                weather.value = data;
+            }
+        })
+        .finally(() => {
+            isRefreshing.value = false;
+        });
 }
 
 onMounted(async () => {
-    await getCurrentWeather();
+    await getCities();
 });
 
 watch([() => mainStore.lang, () => selectedCity.value, () => selectedUnit.value], async () => {
     await getCurrentWeather();
 });
+
+function getTempColor(temp) {
+    let cold = 'text-blue-600 dark:text-blue-500';
+    let hot = 'text-red-600 dark:text-red-500';
+    let warm = 'text-yellow-600 dark:text-yellow-500';
+    switch (selectedUnit.value) {
+        case 'imperial':
+            return temp > 80 ? hot : temp < 60 ? cold : warm;
+        case 'metric':
+            return temp > 27 ? hot : temp < 15 ? cold : warm;
+        case 'default':
+            return temp > 300 ? hot : temp < 288 ? cold : warm;
+        default:
+            return 'text-gray-900 dark:text-white';
+    }
+}
 
 function getUnitSymbol() {
     switch (selectedUnit.value) {
@@ -80,12 +109,13 @@ function getWindSymbol() {
 
 <template>
     <CardBox :updated="weather?.info.dt">
-        <div class="flex flex-row items-center mt-5 justify-evenly w-full text-gray-900 dark:text-white">
-            <div class="flex flex-col items-center gap-4 justify-center">
+        <div class="flex flex-col lg:flex-row items-center justify-evenly w-full text-gray-900 dark:text-white">
+            <div class="flex flex-row lg:flex-col mb-6 lg:mb-0 items-center gap-4 justify-center">
                 <FormField
                     v-model="selectedCity"
                     type="select"
                     :options="selectCities"
+                    :disabled="isRefreshing"
                     :label="mainStore.lang === 'pt' ? 'Cidade:' : 'City:'"
                     :icon="mdiHomeCity"
                 />
@@ -93,11 +123,15 @@ function getWindSymbol() {
                     v-model="selectedUnit"
                     type="select"
                     :options="selectUnits"
+                    :disabled="isRefreshing"
                     :label="mainStore.lang === 'pt' ? 'Unidade:' : 'Unit:'"
                     :icon="selectUnits.find((unit) => unit.value === selectedUnit).icon"
                 />
             </div>
-            <div class="flex flex-row items-center gap-4 justify-center" :class="isRefreshing ? 'animate-pulse' : ''">
+            <div
+                class="flex flex-row items-center gap-2 md:gap-4 justify-center"
+                :class="isRefreshing ? 'animate-pulse' : ''"
+            >
                 <div>
                     <img
                         :src="
@@ -107,28 +141,30 @@ function getWindSymbol() {
                         "
                         :alt="weather?.info.description"
                         :title="weather?.info.description"
-                        class="w-32 h-32"
+                        class="w-24 h-24 md:w-32 md:h-32"
                     />
                 </div>
                 <div>
                     <div class="flex flex-row items-center gap-4 justify-center">
-                        <span class="text-4xl">{{
-                            selectCities.find((city) => city.value === selectedCity).label
+                        <span class="text-3xl md:text-4xl">{{
+                            weather?.info.city ?? (mainStore.lang === 'pt' ? 'Cidade' : 'City')
                         }}</span>
-                        <span class="text-4xl font-bold">{{ weather?.values.temp ?? 0 }}{{ getUnitSymbol() }}</span>
+                        <span class="text-3xl md:text-4xl font-bold" :class="getTempColor(weather?.values.temp ?? 0)"
+                            >{{ weather?.values.temp ?? 0 }}{{ getUnitSymbol() }}</span
+                        >
                     </div>
                     <div class="flex flex-row items-center gap-4 justify-center mt-4">
-                        <span class="text-xl"
+                        <span class="text-md md:text-xl text-gray-900 dark:text-gray-400"
                             >{{ mainStore.lang === 'pt' ? 'Vento' : 'Wind' }}: {{ weather?.values.wind ?? 0
                             }}{{ getWindSymbol() }}</span
                         >
-                        <span class="text-xl"
+                        <span class="text-md md:text-xl text-gray-900 dark:text-gray-400"
                             >{{ mainStore.lang === 'pt' ? 'Direção' : 'Direction' }}:
                             {{ weather?.values.deg ?? 0 }}°</span
                         >
                     </div>
                     <div class="flex flex-row items-center gap-4 justify-center mt-4">
-                        <span class="text-xl"
+                        <span class="text-md md:text-xl text-gray-900 dark:text-gray-300"
                             >{{ mainStore.lang === 'pt' ? 'Humidade' : 'Humidity' }}:
                             {{ weather?.values.humidity ?? 0 }}%</span
                         >
@@ -136,8 +172,9 @@ function getWindSymbol() {
                             :path="mdiReload"
                             :size="24"
                             :title="mainStore.lang === 'pt' ? 'Forçar atualização' : 'Force update'"
-                            class="mt-1 hover:text-blue-900 dark:hover:text-sky-500 cursor-pointer transition-colors"
-                            @click="getCurrentWeather(true)"
+                            class="mt-0 md:mt-1 hover:text-blue-900 dark:hover:text-sky-500 transition-colors"
+                            :class="isRefreshing ? 'cursor-not-allowed' : 'cursor-pointer'"
+                            @click="isRefreshing ? null : getCities(true)"
                         />
                     </div>
                 </div>
@@ -145,7 +182,7 @@ function getWindSymbol() {
         </div>
         <template #footer>
             <div class="flex justify-end">
-                <span class="text-sm font-bold text-gray-700 dark:text-slate-400">{{
+                <span class="text-sm font-semibold text-gray-700 dark:text-slate-400">{{
                     weather?.info.dateTime ?? null
                 }}</span>
             </div>

@@ -11,7 +11,7 @@ export const useMainStore = defineStore('main', () => {
 
     // Toggle theme
     function toggleTheme() {
-        this.darkMode = !this.darkMode;
+        darkMode.value = !darkMode.value;
 
         // Save theme to local storage
         if (typeof localStorage !== 'undefined') {
@@ -21,7 +21,7 @@ export const useMainStore = defineStore('main', () => {
 
     // Toggle language
     function toggleLang() {
-        this.lang = this.lang === 'pt' ? 'en' : 'pt';
+        lang.value = lang.value === 'pt' ? 'en' : 'pt';
 
         // Set document title on language change
         forceDocumentTitle();

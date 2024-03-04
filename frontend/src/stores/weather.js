@@ -1,30 +1,29 @@
 import { defineStore } from 'pinia';
-import { useMainStore } from './main';
 import { useToast } from 'vue-toast-notification';
+import { useMainStore } from '@/stores/main';
 import axios from 'axios';
 import { ref } from 'vue';
 
-const mainStore = useMainStore();
 const $toast = useToast();
 
 // Back-End API URL
 const backendUrl = 'http://localhost:3000';
 
-export const useWeatherStore = defineStore('weather', () => {
-    // Weather unit
-    const unit = ref('metric');
+const mainStore = useMainStore();
 
-    // Current weather
-    const weather = ref(null);
+export const useWeatherStore = defineStore('weather', () => {
+    // Selected values
+    const selectedCity = ref(null);
+    const selectedUnit = ref('metric');
 
     // Check if city is already in storage
-    function checkStorage(cityId, unit, lang) {
+    function checkStorage() {
         // Get storage
         const storage = JSON.parse(localStorage.getItem('OW-weather')) || {};
-        const key = `${cityId}-${unit}-${lang}`;
+        const key = `${selectedCity.value}-${selectedUnit.value}-${mainStore.lang}`;
         const storedWeather = storage[key];
 
-        // Check if city is already in storage
+        // If data is in storage, return it
         if (storedWeather) {
             try {
                 const now = new Date().getTime();
@@ -32,10 +31,16 @@ export const useWeatherStore = defineStore('weather', () => {
 
                 // If data is not older than 30 minute, return it
                 if (diff < 1800000) {
-                    return (weather.value = storedWeather);
+                    return storedWeather;
                 }
             } catch (error) {
-                $toast.error('Erro ao carregar dados da memória.');
+                switch (mainStore.lang) {
+                    case 'pt':
+                        $toast.error('Erro ao carregar tempo da memória.');
+                        break;
+                    default:
+                        $toast.error('Error loading weather from memory.');
+                }
             }
         }
 
@@ -43,10 +48,10 @@ export const useWeatherStore = defineStore('weather', () => {
     }
 
     // Save data to storage
-    function storeWeather(cityId, unit, lang, data) {
+    function storeWeather(data) {
         // Get storage
         const storage = JSON.parse(localStorage.getItem('OW-weather')) || {};
-        const key = `${cityId}-${unit}-${lang}`;
+        const key = `${selectedCity.value}-${selectedUnit.value}-${mainStore.lang}`;
 
         // Save data to storage
         storage[key] = data;
@@ -54,60 +59,66 @@ export const useWeatherStore = defineStore('weather', () => {
     }
 
     // Get current weather form city
-    async function getCurrentWeather(cityId, unit, lang, force) {
-        $toast.clear();
+    async function getCurrentWeather(cityId, unit, force) {
+        selectedCity.value = cityId;
+        selectedUnit.value = unit;
 
         if (!force) {
-            // Check if city is already in storage
-            const storage = checkStorage(cityId, unit, lang);
+            // Check if weather is already in storage
+            const storage = checkStorage();
             if (storage) {
                 return storage;
             }
         }
 
         try {
-            // Get data from API
+            // Get data from API and save it to storage
             const apiResponse = await axios.get(
-                `${backendUrl}/cities/${cityId}/current?unit=${unit}&lang=${lang}&force=${force}`,
+                `${backendUrl}/cities/${selectedCity.value}/current?unit=${selectedUnit.value}&lang=${mainStore.lang}&force=${force}`,
             );
+            if (apiResponse.data.values) {
+                storeWeather(apiResponse.data);
+            }
 
-            // Save data to storage
-            storeWeather(cityId, unit, lang, apiResponse.data);
-
-            return (weather.value = apiResponse.data);
+            return apiResponse.data;
         } catch (error) {
-            handleError(error.response);
+            handleError(error);
         }
     }
 
-    // Handle error
-    function handleError(response) {
+    // Handle error from API
+    function handleError(error) {
         let errorMsg;
-        if (response.status === 400) {
-            switch (mainStore.lang) {
-                case 'pt':
-                    errorMsg = 'Erro ao carregar dados da API Back-End.';
-                    break;
-                default:
-                    errorMsg = 'Error loading Back-End API data.';
+        switch (mainStore.lang) {
+            case 'pt':
+                errorMsg = 'Erro ao carregar dados da API Back-End.';
+                break;
+            default:
+                errorMsg = 'Error loading Back-End API data.';
+        }
+        try {
+            // Back-End API error
+            if (error.response.status === 400) {
+                $toast.error(errorMsg + ' ' + error.response.data.message);
+            } else {
+                // Open Weather API error
+                switch (mainStore.lang) {
+                    case 'pt':
+                        errorMsg = 'Erro ao carregar dados da API Open Weather.';
+                        break;
+                    default:
+                        errorMsg = 'Error loading Open Weather API data.';
+                }
+                $toast.error(errorMsg);
             }
-            console.error(errorMsg, response.data.message);
-            $toast.error(errorMsg);
-        } else {
-            switch (mainStore.lang) {
-                case 'pt':
-                    errorMsg = 'Erro ao carregar dados da API Open Weather.';
-                    break;
-                default:
-                    errorMsg = 'Error loading Open Weather API data.';
-            }
-            console.error(errorMsg, response);
-            $toast.error(errorMsg);
+        } catch {
+            $toast.error(errorMsg + ' ' + error);
         }
     }
 
     return {
-        unit,
+        selectedCity,
+        selectedUnit,
         getCurrentWeather,
     };
 });

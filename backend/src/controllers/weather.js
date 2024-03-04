@@ -25,6 +25,7 @@ async function getCurrentWeather(cityId, unit, lang, res) {
                 deg: externalApiResponse.data.wind.deg,
             },
             info: {
+                city: externalApiResponse.data.name,
                 description:
                     externalApiResponse.data.weather[0].description.charAt(0).toUpperCase() +
                     externalApiResponse.data.weather[0].description.slice(1),
