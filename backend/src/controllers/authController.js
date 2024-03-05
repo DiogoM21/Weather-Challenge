@@ -2,8 +2,10 @@ const express = require('express');
 const util = require('util');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const router = express.Router();
 const cityController = require('./cityController');
+const userController = require('./userController');
+
+const router = express.Router();
 
 // Secret for JWT
 const JWT_SECRET = 'OW-SECRET';
@@ -22,12 +24,12 @@ async function checkUser(email, lang, db) {
 }
 
 // Function to register user
-async function registerUser(email, hashedPassword, name, unit, city, lang, db) {
+async function registerUser(email, hashedPassword, name, unit, city_id, lang, db) {
     // Insert user into database
     const query = 'INSERT INTO users (email, password, name, city_id, unit, lang) VALUES (?, ?, ?, ?, ?, ?)';
     const queryPromise = util.promisify(db.query).bind(db);
     try {
-        await queryPromise(query, [email, hashedPassword, name, city, unit, lang]);
+        await queryPromise(query, [email, hashedPassword, name, city_id, unit, lang]);
         return lang === 'pt' ? 'Utilizador registado com sucesso!' : 'User registered successfully!';
     } catch (error) {
         return Promise.reject(lang === 'pt' ? 'Erro ao registar utilizador!' : 'Error registering user!');
@@ -56,7 +58,9 @@ router.post('/login', async (req, res) => {
         }
         // Create token
         const accessToken = jwt.sign({ email: user.email }, JWT_SECRET);
-        res.json({ accessToken });
+        // Get user from database
+        const userObject = await userController.checkDatabase(email, lang, req.db);
+        res.json({ accessToken, user: userObject.user });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: error });
@@ -67,7 +71,8 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     const lang = req.query.lang || 'en';
     try {
-        const { email, password, name, city, unit } = req.body;
+        const { email, password, name, unit } = req.body;
+        const cityCode = req.body.city_code;
         // Check if email and password are not null
         if (!email || !password) {
             return res.status(400).json({
@@ -92,7 +97,7 @@ router.post('/register', async (req, res) => {
             });
         }
         // Validate city
-        const cityId = await cityController.validateCityCode(city, lang, req.db);
+        const cityId = await cityController.validateCityCode(cityCode, lang, req.db);
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
         // Register user

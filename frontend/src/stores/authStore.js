@@ -1,7 +1,14 @@
 import { defineStore } from 'pinia';
 import { useToast } from 'vue-toast-notification';
+import { useMainStore } from './mainStore';
+import { useWeatherStore } from './weatherStore';
 import { ref } from 'vue';
 import axios from 'axios';
+
+const router = require('@/router').default;
+
+const mainStore = useMainStore();
+const weatherStore = useWeatherStore();
 
 const $toast = useToast();
 
@@ -14,6 +21,9 @@ export const useAuthStore = defineStore('authStore', () => {
 
     // JWT Token
     const token = ref(null);
+
+    // User data
+    const user = ref(null);
 
     // Login function
     async function login(email, password, lang) {
@@ -32,11 +42,9 @@ export const useAuthStore = defineStore('authStore', () => {
             // Check if login was successful
             if (response.data.accessToken) {
                 // Save token to storage
-                localStorage.setItem('OW-token', response.data.accessToken);
-                token.value = response.data.accessToken;
-                auth.value = true;
-                $toast.success(lang === 'pt' ? 'Login efetuado com sucesso!' : 'Login successful!');
-                return true;
+                saveUserData(response.data);
+                $toast.success(response.data.user.lang === 'pt' ? 'Login efetuado com sucesso!' : 'Login successful!');
+                router.replace('/');
             } else {
                 $toast.error(response.data.message);
             }
@@ -46,7 +54,7 @@ export const useAuthStore = defineStore('authStore', () => {
     }
 
     // Register function
-    async function register(email, password, name, city, unit, lang) {
+    async function register(email, password, name, city_code, unit, lang) {
         try {
             // Check if email and password are not null
             if (!email || !password || !name) {
@@ -61,13 +69,13 @@ export const useAuthStore = defineStore('authStore', () => {
                 email,
                 password,
                 name,
-                city,
+                city_code,
                 unit,
             });
             // Check if register was successful
             if (response.data.message && response.status === 200) {
                 $toast.success(response.data.message);
-                return true;
+                router.replace('/login');
             } else {
                 $toast.error(response.data.message);
             }
@@ -76,21 +84,39 @@ export const useAuthStore = defineStore('authStore', () => {
         }
     }
 
+    // Function to save data to storage
+    function saveUserData(data) {
+        token.value = data.accessToken;
+        localStorage.setItem('OW-token', data.accessToken);
+        localStorage.setItem('OW-user', JSON.stringify(data.user));
+        auth.value = true;
+    }
+
     // Function to restore token from storage
     function checkAuth() {
+        // Restore token from storage
         const storageToken = localStorage.getItem('OW-token');
         if (storageToken) {
-            token.value = storageToken;
             auth.value = true;
+            token.value = storageToken;
+            // Restore user from storage
+            const storageUser = localStorage.getItem('OW-user');
+            if (storageUser) {
+                user.value = JSON.parse(storageUser);
+                mainStore.toggleLang(user.value.lang === 'pt' ? 'pt' : 'en');
+                weatherStore.getAPIWeather(user.value.city_code, user.value.unit);
+            }
         }
     }
 
     // Function to logout
     function logout() {
-        // Remove token from storage
+        // Remove data from storage
         localStorage.removeItem('OW-token');
-        token.value = null;
+        localStorage.removeItem('OW-user');
         auth.value = false;
+        token.value = null;
+        user.value = null;
     }
 
     // Handle error from API

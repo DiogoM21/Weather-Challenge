@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import {
     mdiReload,
     mdiHomeCity,
@@ -27,8 +27,8 @@ const mainStore = useMainStore();
 const cityStore = useCityStore();
 const weatherStore = useWeatherStore();
 
-const weather = ref(null);
-const filteredNextWeather = ref(null);
+const weather = computed(() => weatherStore.weather);
+const filteredNextWeather = computed(() => weather?.value?.next?.slice(0, selectedCount.value) ?? []);
 const isRefreshing = ref(false);
 const showNext = ref(true);
 
@@ -39,7 +39,7 @@ const selectUnits = [
 ];
 
 const selectCities = ref(null);
-const selectedCity = ref(null);
+const selectedCity = ref(weatherStore.selectedCity);
 const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.selectedUnit).value);
 const selectedCount = ref(5);
 
@@ -70,17 +70,9 @@ async function getCities(force = false) {
 
 async function getAPIWeather(force = false) {
     isRefreshing.value = true;
-    weatherStore
-        .getAPIWeather(selectedCity.value, selectedUnit.value, force)
-        .then((data) => {
-            if (data) {
-                weather.value = data;
-                filteredNextWeather.value = data.next.slice(0, selectedCount.value);
-            }
-        })
-        .finally(() => {
-            isRefreshing.value = false;
-        });
+    weatherStore.getAPIWeather(selectedCity.value, selectedUnit.value, force).finally(() => {
+        isRefreshing.value = false;
+    });
 }
 
 onMounted(async () => {
@@ -95,7 +87,6 @@ watch([() => selectedCount.value], () => {
     if (selectedCount.value === 0) {
         toggleNext();
     }
-    filteredNextWeather.value = weather?.value.next.slice(0, selectedCount.value);
 });
 
 function toggleNext() {

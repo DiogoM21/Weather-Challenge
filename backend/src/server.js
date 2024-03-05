@@ -44,11 +44,13 @@ connectWithRetry(db).then(() => {
     const homeController = require('./controllers/homeController');
     const authController = require('./controllers/authController');
     const { router: cityController } = require('./controllers/cityController');
+    const { router: userController } = require('./controllers/userController');
 
     // Routes
     app.use('/', homeController);
     app.use('/auth', authController);
     app.use('/cities', cityController);
+    app.use('/user', userController);
 
     // Start the server
     app.listen(PORT, () => {

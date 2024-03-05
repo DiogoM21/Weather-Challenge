@@ -20,8 +20,12 @@ export const useMainStore = defineStore('mainStore', () => {
     }
 
     // Toggle language
-    function toggleLang() {
-        lang.value = lang.value === 'pt' ? 'en' : 'pt';
+    function toggleLang(value) {
+        if (value) {
+            lang.value = value;
+        } else {
+            lang.value = lang.value === 'pt' ? 'en' : 'pt';
+        }
 
         // Set document title on language change
         forceDocumentTitle();

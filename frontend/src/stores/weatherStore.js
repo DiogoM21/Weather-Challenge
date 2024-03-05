@@ -12,6 +12,9 @@ const BACKENDURL = 'http://localhost:3000';
 const mainStore = useMainStore();
 
 export const useWeatherStore = defineStore('weatherStore', () => {
+    // Weather data
+    const weather = ref(null);
+
     // Selected values
     const selectedCity = ref(null);
     const selectedUnit = ref('metric');
@@ -59,7 +62,7 @@ export const useWeatherStore = defineStore('weatherStore', () => {
         if (!force) {
             // Check if weather is already in storage
             const storage = checkStorage();
-            if (storage) return storage;
+            if (storage) weather.value = storage;
         }
         try {
             // Get data from API and save it to storage
@@ -69,7 +72,7 @@ export const useWeatherStore = defineStore('weatherStore', () => {
             if (apiResponse.data.values) {
                 storeWeather(apiResponse.data);
             }
-            return apiResponse.data;
+            weather.value = apiResponse.data;
         } catch (error) {
             handleError(error);
         }
@@ -86,6 +89,7 @@ export const useWeatherStore = defineStore('weatherStore', () => {
     }
 
     return {
+        weather,
         selectedCity,
         selectedUnit,
         getAPIWeather,

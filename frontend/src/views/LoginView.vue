@@ -1,6 +1,5 @@
 <script setup>
 import { reactive } from 'vue';
-import { useRouter } from 'vue-router';
 import { mdiEmail, mdiAsterisk, mdiLoginVariant, mdiCloseCircleOutline } from '@mdi/js';
 import { useMainStore } from '@/stores/mainStore.js';
 import { useAuthStore } from '@/stores/authStore.js';
@@ -8,8 +7,6 @@ import CardBox from '@/components/CardBox.vue';
 import FormField from '@/components/FormField.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import MainLayout from '@/components/MainLayout.vue';
-
-const router = useRouter();
 
 const mainStore = useMainStore();
 const authStore = useAuthStore();
@@ -20,17 +17,13 @@ const form = reactive({
 });
 
 const submit = async () => {
-    await authStore.login(form.email, form.password, mainStore.lang).then((success) => {
-        if (success) {
-            router.push({ name: 'home' });
-        }
-    });
+    await authStore.login(form.email, form.password, mainStore.lang);
 };
 </script>
 
 <template>
     <MainLayout>
-        <CardBox small is-form @submit="submit">
+        <CardBox small is-form @submit.prevent="submit">
             <span class="text-4xl font-semibold mb-2">
                 {{ mainStore.lang === 'pt' ? 'Entrar' : 'Login' }}
             </span>

@@ -229,4 +229,5 @@ async function getAPIWeather(cityCode, unit, lang, res, db) {
 module.exports = {
     checkDatabase,
     getAPIWeather,
+    formatDateTime,
 };

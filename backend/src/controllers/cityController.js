@@ -1,7 +1,8 @@
 const express = require('express');
 const util = require('util');
-const router = express.Router();
 const weatherController = require('./weatherController');
+
+const router = express.Router();
 
 // Function to get cities from database
 async function getCities(lang, db) {

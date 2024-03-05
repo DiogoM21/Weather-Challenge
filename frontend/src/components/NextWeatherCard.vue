@@ -73,7 +73,10 @@ function getTitle(values, description) {
 </script>
 
 <template>
-    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 py-5" :class="{ 'animate-pulse': isRefreshing }">
+    <div
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 py-5"
+        :class="{ 'animate-pulse': isRefreshing }"
+    >
         <div v-for="weather in nextWeather" :key="weather.info.dt" class="animate-fade-in">
             <div
                 :title="getTitle(weather.values, weather.info.description)"

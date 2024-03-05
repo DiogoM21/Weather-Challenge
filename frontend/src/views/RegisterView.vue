@@ -1,6 +1,5 @@
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import {
     mdiEmail,
     mdiAsterisk,
@@ -19,8 +18,6 @@ import CardBox from '@/components/CardBox.vue';
 import FormField from '@/components/FormField.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import MainLayout from '@/components/MainLayout.vue';
-
-const router = useRouter();
 
 const mainStore = useMainStore();
 const authStore = useAuthStore();
@@ -43,29 +40,25 @@ const form = reactive({
     email: '',
     password: '',
     name: '',
-    city: '',
+    city_code: '',
     unit: selectUnits[0].value,
     lang: mainStore.lang,
 });
 
 const submit = async () => {
-    await authStore.register(form.email, form.password, form.name, form.city, form.unit, form.lang).then((success) => {
-        if (success) {
-            router.push({ name: 'home' });
-        }
-    });
+    await authStore.register(form.email, form.password, form.name, form.city_code, form.unit, form.lang);
 };
 
 onMounted(async () => {
     await cityStore.getAPICities(true).then((cities) => {
         if (cities && cities.length > 0) {
             selectCities.value = cities;
-            if (!form.city) {
-                form.city = cities[0].value;
+            if (!form.city_code) {
+                form.city_code = cities[0].value;
             } else {
-                const city = cities.find((c) => c.value === form.city);
+                const city = cities.find((c) => c.value === form.city_code);
                 if (!city) {
-                    form.city = cities[0].value;
+                    form.city_code = cities[0].value;
                 }
             }
         }
@@ -75,7 +68,7 @@ onMounted(async () => {
 
 <template>
     <MainLayout>
-        <CardBox small is-form @submit="submit">
+        <CardBox small is-form @submit.prevent="submit">
             <span class="text-4xl font-semibold mb-2">
                 {{ mainStore.lang === 'pt' ? 'Registar' : 'Register' }}
             </span>
@@ -129,7 +122,7 @@ onMounted(async () => {
                 <div class="flex flex-col gap-4">
                     <FormField
                         id="city"
-                        v-model="form.city"
+                        v-model="form.city_code"
                         :icon="mdiAccountPlus"
                         label="Cidade"
                         type="select"
