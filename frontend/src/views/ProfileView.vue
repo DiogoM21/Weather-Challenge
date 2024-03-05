@@ -198,7 +198,7 @@ onMounted(async () => {
                     >{{ form.created_at ?? null }}</span
                 >
             </div>
-            <div class="flex justify-between items-center gap-6 my-4">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6 my-4">
                 <BaseButton
                     type="submit"
                     color="success"
