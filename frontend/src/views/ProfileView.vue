@@ -4,6 +4,7 @@ import {
     mdiEmail,
     mdiAsterisk,
     mdiAccountPlus,
+    mdiHomeCity,
     mdiCloseCircleOutline,
     mdiTemperatureCelsius,
     mdiTemperatureKelvin,
@@ -13,6 +14,7 @@ import {
 } from '@mdi/js';
 import { useMainStore } from '@/stores/mainStore.js';
 import { useAuthStore } from '@/stores/authStore.js';
+import { useWeatherStore } from '@/stores/weatherStore.js';
 import { useCityStore } from '@/stores/cityStore.js';
 import CardBox from '@/components/CardBox.vue';
 import FormField from '@/components/FormField.vue';
@@ -21,10 +23,12 @@ import MainLayout from '@/components/MainLayout.vue';
 
 const mainStore = useMainStore();
 const authStore = useAuthStore();
+const weatherStore = useWeatherStore();
 const cityStore = useCityStore();
 
-const selectCities = computed(() => cityStore.cities);
 const user = computed(() => authStore.user);
+
+const selectCities = computed(() => cityStore.cities);
 
 const selectUnits = [
     { label: 'Celsius', value: 'metric', icon: mdiTemperatureCelsius },
@@ -41,8 +45,8 @@ const form = reactive({
     email: '',
     password: '',
     name: '',
-    city_code: '',
-    unit: selectUnits[0].value,
+    city_code: weatherStore.selectedCity || '',
+    unit: weatherStore.selectedUnit || 'metric',
     lang: '',
     created_at: '',
 });
@@ -52,7 +56,7 @@ watchEffect(() => {
         form.email = user.value.email;
         form.name = user.value.name;
         form.city_code = user.value.city_code;
-        form.unit = user.value.unit || selectUnits[0].value;
+        form.unit = user.value.unit || 'metric';
         form.lang = user.value.lang || mainStore.lang;
         form.created_at = user.value.created_at;
     }
@@ -63,23 +67,12 @@ const submit = async () => {
 };
 
 onMounted(async () => {
-    if (!cityStore.cities || cityStore.cities.length === 0) {
-        await cityStore.getAPICities(true).then((cities) => {
-            if (cities && cities.length > 0) {
-                if (!form.city_code) {
-                    form.city_code = cities[0].value;
-                } else {
-                    const city = cities.find((c) => c.value === form.city_code);
-                    if (!city) {
-                        form.city_code = cities[0].value;
-                    }
-                }
+    if (!selectCities.value || selectCities.value.length === 0) {
+        await cityStore.getAPICities().then(() => {
+            if (selectCities.value.length > 0 && !form.city_code) {
+                form.city_code = selectCities.value[0].value;
             }
         });
-    } else {
-        if (!form.city_code) {
-            form.city_code = cityStore.cities[0].value;
-        }
     }
 });
 </script>
@@ -141,7 +134,7 @@ onMounted(async () => {
                     <FormField
                         id="city"
                         v-model="form.city_code"
-                        :icon="mdiAccountPlus"
+                        :icon="mdiHomeCity"
                         label="Cidade"
                         type="select"
                         :options="selectCities"
@@ -153,7 +146,11 @@ onMounted(async () => {
                     <FormField
                         id="unit"
                         v-model="form.unit"
-                        :icon="selectUnits.find((unit) => unit.value === form.unit).icon"
+                        :icon="
+                            selectUnits.value
+                                ? selectUnits.find((unit) => unit.value === form.unit).icon
+                                : mdiTemperatureCelsius
+                        "
                         label="Unidade"
                         type="select"
                         :options="selectUnits"
@@ -183,7 +180,7 @@ onMounted(async () => {
             <div class="flex justify-center lg:justify-end my-2 lg:my-1 w-full px-8">
                 <span
                     class="text-md font-semibold text-gray-700 dark:text-slate-400"
-                    :title="mainStore.lang === 'pt' ? 'Conta criada em' : 'Account created at'"
+                    :title="mainStore.lang === 'pt' ? 'Data de registo' : 'Registration date'"
                     >{{ form.created_at ?? null }}</span
                 >
             </div>

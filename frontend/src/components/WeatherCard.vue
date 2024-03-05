@@ -189,7 +189,11 @@ function getIconWind(deg) {
                     :options="selectUnits"
                     :disabled="isRefreshing"
                     :label="mainStore.lang === 'pt' ? 'Unidade:' : 'Unit:'"
-                    :icon="selectUnits.find((unit) => unit.value === selectedUnit).icon"
+                    :icon="
+                        selectUnits.value
+                            ? selectUnits.find((unit) => unit.value === selectedUnit).icon
+                            : mdiTemperatureCelsius
+                    "
                     small
                 />
             </div>
@@ -261,7 +265,7 @@ function getIconWind(deg) {
         <div class="flex justify-center md:justify-end my-4 lg:my-2 w-full px-8">
             <span
                 class="text-md font-semibold text-gray-700 dark:text-slate-400"
-                :title="mainStore.lang === 'pt' ? 'Atualizado em' : 'Updated at'"
+                :title="mainStore.lang === 'pt' ? 'Última atualização' : 'Last update'"
                 >{{ weather?.info.date_time ?? null }}</span
             >
         </div>
