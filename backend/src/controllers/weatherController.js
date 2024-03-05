@@ -76,8 +76,7 @@ async function checkDatabase(cityCode, unit, lang, db) {
 // Function to fetch weather data from external API
 async function fetchAPIWeatherData(endpoint, lang) {
     try {
-        const response = await axios.get(endpoint);
-        return response;
+        return await axios.get(endpoint);
     } catch (error) {
         return Promise.reject(
             lang === 'pt' ? 'Erro ao carregar tempo da API Externa!' : 'Error loading weather from External API!',

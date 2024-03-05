@@ -59,18 +59,19 @@ export const useAuthStore = defineStore('authStore', () => {
             // Check if email and password are not null
             if (!email || !password || !name) {
                 $toast.error(
-                    lang === 'pt'
+                    mainStore.lang === 'pt'
                         ? 'E-mail, palavra-passe e nome são obrigatórios!'
                         : 'Email, password and name are required!',
                 );
             }
             // Send register request to API
-            const response = await axios.post(`${BACKENDURL}/auth/register?lang=${lang}`, {
+            const response = await axios.post(`${BACKENDURL}/auth/register?lang=${mainStore.lang}`, {
                 email,
                 password,
                 name,
                 city_code,
                 unit,
+                lang,
             });
             // Check if register was successful
             if (response.data.message && response.status === 200) {
@@ -80,7 +81,7 @@ export const useAuthStore = defineStore('authStore', () => {
                 $toast.error(response.data.message);
             }
         } catch (error) {
-            handleError(error, lang === 'pt' ? 'Registo falhou.' : 'Register failed.');
+            handleError(error, mainStore.lang === 'pt' ? 'Registo falhou.' : 'Register failed.');
         }
     }
 
@@ -89,13 +90,14 @@ export const useAuthStore = defineStore('authStore', () => {
         try {
             // Send update request to API
             const response = await axios.patch(
-                `${BACKENDURL}/user/update?lang=${lang}`,
+                `${BACKENDURL}/user/update?lang=${mainStore.lang}`,
                 {
                     email,
                     password,
                     name,
                     city_code,
                     unit,
+                    lang,
                 },
                 {
                     headers: {
@@ -111,7 +113,7 @@ export const useAuthStore = defineStore('authStore', () => {
                 $toast.error(response.data.message);
             }
         } catch (error) {
-            handleError(error, lang === 'pt' ? 'Atualização falhou.' : 'Update failed.');
+            handleError(error, mainStore.lang === 'pt' ? 'Atualização falhou.' : 'Update failed.');
         }
     }
 

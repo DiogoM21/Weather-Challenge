@@ -10,23 +10,23 @@ const router = express.Router();
 // Secret for JWT
 const JWT_SECRET = 'OW-SECRET';
 
-// Function to register user
+// Function to register user in database
 async function registerUser(email, hashedPassword, name, unit, city_id, lang, db) {
     // Insert user into database
     const query = 'INSERT INTO users (email, password, name, city_id, unit, lang) VALUES (?, ?, ?, ?, ?, ?)';
     const queryPromise = util.promisify(db.query).bind(db);
     try {
         await queryPromise(query, [email, hashedPassword, name, city_id, unit, lang]);
-        return lang === 'pt' ? 'Utilizador registado com sucesso!' : 'User registered successfully!';
+        return Promise.resolve(lang === 'pt' ? 'Utilizador registado com sucesso!' : 'User registered successfully!');
     } catch (error) {
         return Promise.reject(lang === 'pt' ? 'Erro ao registar utilizador!' : 'Error registering user!');
     }
 }
 
-// Login route
+// Route to login
 router.post('/login', async (req, res) => {
-    const lang = req.query.lang || 'en';
     try {
+        const lang = req.query.lang || 'en';
         const { email, password } = req.body;
         // Check if email and password are not null
         if (!email || !password) {
@@ -43,6 +43,7 @@ router.post('/login', async (req, res) => {
                 .status(401)
                 .json({ message: lang === 'pt' ? 'E-mail ou palavra-passe inválidos!' : 'Invalid email or password!' });
         }
+
         // Create token
         const accessToken = jwt.sign({ email: user.email }, JWT_SECRET);
         // Get user from database
@@ -54,11 +55,12 @@ router.post('/login', async (req, res) => {
     }
 });
 
-// Register route
+// Route to register in database
 router.post('/register', async (req, res) => {
-    const lang = req.query.lang || 'en';
     try {
+        const lang = req.query.lang || 'en';
         const { email, password, name, unit } = req.body;
+        const bodyLang = req.body.lang || 'en';
         const cityCode = req.body.city_code;
         // Check if email, password and name are not null
         if (!email || !password || !name) {
@@ -90,7 +92,7 @@ router.post('/register', async (req, res) => {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
         // Register user
-        const message = await registerUser(email, hashedPassword, name, unit, cityId, lang, req.db);
+        const message = await registerUser(email, hashedPassword, name, unit, cityId, bodyLang, req.db);
         res.json({ message });
     } catch (error) {
         console.error(error);

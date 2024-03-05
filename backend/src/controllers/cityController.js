@@ -6,12 +6,11 @@ const router = express.Router();
 
 // Function to get cities from database
 async function getCities(lang, db) {
-    // Get cities from database
-    const query = 'SELECT * FROM cities';
-    const queryPromise = util.promisify(db.query).bind(db);
     try {
-        const results = await queryPromise(query);
-        return results;
+        // Get cities from database
+        const query = 'SELECT * FROM cities';
+        const queryPromise = util.promisify(db.query).bind(db);
+        return await queryPromise(query);
     } catch (error) {
         return Promise.reject(lang === 'pt' ? 'Erro ao carregar cidades!' : 'Error loading cities!');
     }
@@ -38,10 +37,10 @@ async function validateCityCode(cityCode, lang, db) {
     }
 }
 
-// Cities route
+// Route to get cities from database
 router.get('/', async (req, res) => {
-    const lang = req.query.lang || 'en';
     try {
+        const lang = req.query.lang || 'en';
         // Get cities from database
         const cities = await getCities(lang, req.db);
         res.json({
@@ -58,14 +57,15 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Weather route
+// Route to get weather from city
 router.get('/:id/weather', async (req, res) => {
-    // Params and query from request
-    const cityCode = req.params.id;
-    const unit = req.query.unit || 'metric';
-    const lang = req.query.lang || 'en';
-    const force = req.query.force || false;
     try {
+        // Params and query from request
+        const cityCode = req.params.id;
+        const unit = req.query.unit || 'metric';
+        const lang = req.query.lang || 'en';
+        const force = req.query.force || false;
+
         // Validate cityCode
         await validateCityCode(cityCode, lang, req.db);
         // Get weather from database
@@ -76,6 +76,7 @@ router.get('/:id/weather', async (req, res) => {
                 return res.json(weather);
             }
         }
+
         // Get weather from External API
         return weatherController.getAPIWeather(cityCode, unit, lang, res, req.db);
     } catch (error) {
