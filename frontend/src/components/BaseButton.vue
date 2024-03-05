@@ -33,13 +33,22 @@ const props = defineProps({
 });
 
 const componentClass = computed(() => {
-    return [
-        'flex items-center justify-center gap-1 px-4 py-1.5 rounded-md hover:scale-105 hover:font-medium transition-all',
-        props.disabled ? 'cursor-not-allowed' : 'cursor-pointer',
-        props.color === 'sucess'
-            ? 'border-2 bg-emerald-600 dark:bg-emerald-600 border-emerald-600 dark:border-emerald-600 text-white'
-            : 'border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black',
-    ];
+    const baseClasses =
+        'flex items-center justify-center gap-1 px-4 py-1.5 rounded-md hover:scale-105 hover:font-medium transition-all';
+    const cursorClass = props.disabled ? 'cursor-not-allowed' : 'cursor-pointer';
+    let clr;
+    switch (props.color) {
+        case 'success':
+            clr = 'border-2 bg-emerald-600 dark:bg-emerald-600 border-emerald-600 dark:border-emerald-600 text-white';
+            break;
+        case 'error':
+            clr = 'border-2 bg-red-500 dark:bg-red-500 border-red-500 dark:border-red-500 text-white';
+            break;
+        default:
+            clr =
+                'border-2 border-black dark:border-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black';
+    }
+    return [baseClasses, cursorClass, clr];
 });
 </script>
 

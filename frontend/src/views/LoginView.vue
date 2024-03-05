@@ -60,7 +60,7 @@ const submit = async () => {
             <div class="flex justify-between items-center gap-6 my-4">
                 <BaseButton
                     type="submit"
-                    color="sucess"
+                    color="success"
                     :label="mainStore.lang === 'pt' ? 'Entrar' : 'Login'"
                     :icon="mdiLoginVariant"
                     :class="{ 'opacity-25': form.processing || !form.email || !form.password }"

@@ -166,7 +166,7 @@ onMounted(async () => {
             <div class="flex justify-between items-center gap-6 my-4">
                 <BaseButton
                     type="submit"
-                    color="sucess"
+                    color="success"
                     :label="mainStore.lang === 'pt' ? 'Registar' : 'Register'"
                     :icon="mdiAccountPlus"
                     :class="{

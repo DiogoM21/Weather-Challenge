@@ -137,7 +137,7 @@ router.delete('/delete', authenticateToken, async (req, res) => {
         const query = 'DELETE FROM users WHERE email = ?';
         const queryPromise = util.promisify(req.db.query).bind(req.db);
         await queryPromise(query, [email]);
-        res.json(lang === 'pt' ? 'Utilizador apagado com sucesso!' : 'User deleted successfully!');
+        res.json({ message: lang === 'pt' ? 'Utilizador eliminado com sucesso!' : 'User deleted successfully!' });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: error });

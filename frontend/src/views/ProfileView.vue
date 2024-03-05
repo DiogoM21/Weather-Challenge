@@ -11,6 +11,7 @@ import {
     mdiTemperatureFahrenheit,
     mdiTranslateVariant,
     mdiAccountBox,
+    mdiTrashCanOutline,
 } from '@mdi/js';
 import { useMainStore } from '@/stores/mainStore.js';
 import { useAuthStore } from '@/stores/authStore.js';
@@ -64,6 +65,19 @@ watchEffect(() => {
 
 const submit = async () => {
     await authStore.updateUser(form.email, form.password, form.name, form.city_code, form.unit, form.lang);
+};
+
+const deleteUser = async () => {
+    if (
+        !confirm(
+            mainStore.lang === 'pt'
+                ? 'Tem a certeza que quer apagar a sua conta?'
+                : 'Are you sure you want to delete your account?',
+        )
+    ) {
+        return;
+    }
+    await authStore.deleteUser();
 };
 
 onMounted(async () => {
@@ -187,7 +201,7 @@ onMounted(async () => {
             <div class="flex justify-between items-center gap-6 my-4">
                 <BaseButton
                     type="submit"
-                    color="sucess"
+                    color="success"
                     :label="mainStore.lang === 'pt' ? 'Guardar' : 'Save'"
                     :icon="mdiAccountPlus"
                     :class="{
@@ -197,6 +211,14 @@ onMounted(async () => {
                     :disabled="
                         form.processing || !form.email || !form.name || !form.city_code || !form.unit || !form.lang
                     "
+                />
+                <BaseButton
+                    color="error"
+                    type="button"
+                    :label="mainStore.lang === 'pt' ? 'Apagar' : 'Delete'"
+                    :icon="mdiTrashCanOutline"
+                    :disabled="form.processing"
+                    @click="deleteUser"
                 />
                 <BaseButton
                     :icon="mdiCloseCircleOutline"

@@ -117,6 +117,31 @@ export const useAuthStore = defineStore('authStore', () => {
         }
     }
 
+    // Function to delete user
+    async function deleteUser() {
+        try {
+            // Send delete request to API
+            const response = await axios.delete(`${BACKENDURL}/user/delete?lang=${mainStore.lang}`, {
+                headers: {
+                    Authorization: `Bearer ${token.value}`,
+                },
+                data: {
+                    email: user.value.email,
+                },
+            });
+            // Check if delete was successful
+            if (response.status === 200) {
+                $toast.success(response.data.message);
+                logout();
+                router.replace('/login');
+            } else {
+                $toast.error(response.data.message);
+            }
+        } catch (error) {
+            handleError(error, mainStore.lang === 'pt' ? 'Remoção falhou.' : 'Delete failed.');
+        }
+    }
+
     // Function to save data to storage
     function saveUserData(data, isLogin) {
         if (isLogin) {
@@ -174,6 +199,7 @@ export const useAuthStore = defineStore('authStore', () => {
         login,
         register,
         updateUser,
+        deleteUser,
         checkAuth,
         logout,
     };
