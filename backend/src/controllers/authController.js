@@ -11,12 +11,12 @@ const router = express.Router();
 const JWT_SECRET = 'OW-SECRET';
 
 // Function to register user in database
-async function registerUser(email, hashedPassword, name, unit, city_id, lang, db) {
+async function registerUser(email, hashedPassword, name, unit, city_id, body_lang, lang, db) {
     // Insert user into database
     const query = 'INSERT INTO users (email, password, name, city_id, unit, lang) VALUES (?, ?, ?, ?, ?, ?)';
     const queryPromise = util.promisify(db.query).bind(db);
     try {
-        await queryPromise(query, [email, hashedPassword, name, city_id, unit, lang]);
+        await queryPromise(query, [email, hashedPassword, name, city_id, unit, body_lang]);
         return Promise.resolve(lang === 'pt' ? 'Utilizador registado com sucesso!' : 'User registered successfully!');
     } catch (error) {
         return Promise.reject(lang === 'pt' ? 'Erro ao registar utilizador!' : 'Error registering user!');
@@ -92,7 +92,7 @@ router.post('/register', async (req, res) => {
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
         // Register user
-        const message = await registerUser(email, hashedPassword, name, unit, cityId, bodyLang, req.db);
+        const message = await registerUser(email, hashedPassword, name, unit, cityId, bodyLang, lang, req.db);
         res.json({ message });
     } catch (error) {
         console.error(error);

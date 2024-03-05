@@ -115,6 +115,35 @@ router.patch('/update', authenticateToken, async (req, res) => {
     }
 });
 
+// Route to delete user from database
+router.delete('/delete', authenticateToken, async (req, res) => {
+    try {
+        const lang = req.query.lang || 'en';
+        const { email } = req.body;
+        // Check if email is not null
+        if (!email) {
+            return res.status(400).json({
+                message: lang === 'pt' ? 'E-mail é obrigatório!' : 'Email is required!',
+            });
+        }
+        // Check if user exists
+        const user = await checkUser(email, lang, req.db);
+        if (!user) {
+            return res.status(400).json({
+                message: lang === 'pt' ? 'Utilizador não encontrado!' : 'User not found!',
+            });
+        }
+        // Delete user from database
+        const query = 'DELETE FROM users WHERE email = ?';
+        const queryPromise = util.promisify(req.db.query).bind(req.db);
+        await queryPromise(query, [email]);
+        res.json(lang === 'pt' ? 'Utilizador apagado com sucesso!' : 'User deleted successfully!');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: error });
+    }
+});
+
 module.exports = {
     checkDatabase,
     checkUser,

@@ -108,12 +108,12 @@ async function saveWeatherData(cityCode, unit, lang, weather, db) {
         const cityResults = await queryPromise(query, [cityCode]);
         const cityId = cityResults[0].id;
 
-        // Save current weather data
+        // Save current weather data and get the inserted id
         const insertQuery = `INSERT INTO weather 
         (city_id, unit, lang, temp, feels_like, humidity, wind, deg, description, icon, dt) 
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         const insertPromise = util.promisify(db.query).bind(db);
-        await insertPromise(insertQuery, [
+        const result = await insertPromise(insertQuery, [
             cityId,
             unit,
             lang,
@@ -126,12 +126,8 @@ async function saveWeatherData(cityCode, unit, lang, weather, db) {
             weather.info.icon,
             weather.info.dt,
         ]);
-
-        // Get weather id
-        const weatherQuery = 'SELECT id FROM weather WHERE city_id = ? AND dt = ?';
-        const weatherPromise = util.promisify(db.query).bind(db);
-        const weatherResults = await weatherPromise(weatherQuery, [cityId, weather.info.dt]);
-        const weatherId = weatherResults[0].id;
+        // Get the inserted id
+        const weatherId = result.insertId;
 
         // Save next weather data
         const insertNextQuery =
