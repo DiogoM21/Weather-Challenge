@@ -42,7 +42,7 @@ export const useAuthStore = defineStore('authStore', () => {
             // Check if login was successful
             if (response.data.accessToken) {
                 // Save token to storage
-                saveUserData(response.data);
+                saveUserData(response.data, true);
                 $toast.success(response.data.user.lang === 'pt' ? 'Login efetuado com sucesso!' : 'Login successful!');
                 router.replace('/');
             } else {
@@ -85,64 +85,67 @@ export const useAuthStore = defineStore('authStore', () => {
     }
 
     // Function to update user data
-    function updateUser(email, password, name, city_code, unit, lang) {
+    async function updateUser(email, password, name, city_code, unit, lang) {
         try {
             // Send update request to API
-            axios
-                .patch(
-                    `${BACKENDURL}/user/update?lang=${lang}`,
-                    {
-                        email,
-                        password,
-                        name,
-                        city_code,
-                        unit,
+            const response = await axios.patch(
+                `${BACKENDURL}/user/update?lang=${lang}`,
+                {
+                    email,
+                    password,
+                    name,
+                    city_code,
+                    unit,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token.value}`,
                     },
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token.value}`,
-                        },
-                    },
-                )
-                .then((response) => {
-                    // Check if update was successful
-                    if (response.data.message && response.status === 200) {
-                        $toast.success(response.data.message);
-                        saveUserData(response.data);
-                        mainStore.toggleLang(response.data.user.lang === 'pt' ? 'pt' : 'en');
-                        weatherStore.getAPIWeather(response.data.user.city_code, response.data.user.unit, false);
-                    } else {
-                        $toast.error(response.data.message);
-                    }
-                })
-                .catch((error) => {
-                    handleError(error, lang === 'pt' ? 'Atualização falhou.' : 'Update failed.');
-                });
+                },
+            );
+            // Check if update was successful
+            if (response.data.message && response.status === 200) {
+                $toast.success(response.data.message);
+                saveUserData(response.data, false);
+            } else {
+                $toast.error(response.data.message);
+            }
         } catch (error) {
             handleError(error, lang === 'pt' ? 'Atualização falhou.' : 'Update failed.');
         }
     }
 
     // Function to save data to storage
-    function saveUserData(data) {
-        localStorage.setItem('OW-token', data.accessToken);
+    function saveUserData(data, isLogin) {
+        if (isLogin) {
+            auth.value = true;
+            token.value = data.accessToken;
+            localStorage.setItem('OW-token', data.accessToken);
+        }
+        user.value = data.user;
         localStorage.setItem('OW-user', JSON.stringify(data.user));
     }
 
     // Function to restore token from storage
     function checkAuth() {
-        // Restore token from storage
-        const storageToken = localStorage.getItem('OW-token');
-        if (storageToken) {
-            auth.value = true;
-            token.value = storageToken;
-            // Restore user from storage
-            const storageUser = localStorage.getItem('OW-user');
-            if (storageUser) {
-                user.value = JSON.parse(storageUser);
-                mainStore.toggleLang(user.value.lang === 'pt' ? 'pt' : 'en');
-                weatherStore.getAPIWeather(user.value.city_code, user.value.unit, false);
+        try {
+            // Restore token from storage
+            const storageToken = localStorage.getItem('OW-token');
+            if (storageToken) {
+                auth.value = true;
+                token.value = storageToken;
+                // Restore user from storage
+                const storageUser = localStorage.getItem('OW-user');
+                if (storageUser && storageUser !== 'null') {
+                    user.value = JSON.parse(storageUser);
+                    mainStore.toggleLang(user.value.lang === 'pt' ? 'pt' : 'en');
+                    if (user.value.city_code) {
+                        weatherStore.getAPIWeather(user.value.city_code, user.value.unit, false);
+                    }
+                }
             }
+        } catch (error) {
+            $toast.error(mainStore.lang === 'pt' ? 'Erro ao restaurar sessão.' : 'Error restoring session.');
         }
     }
 

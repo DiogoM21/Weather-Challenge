@@ -7,9 +7,15 @@ const JWT_SECRET = 'OW-SECRET';
 function authenticateToken(req, res, next) {
     const lang = req.query.lang || 'en';
     // Get token from headers
-    const token = req.headers['authorization'];
+    var token = req.headers['authorization'];
     // Check if token is not null
     if (!token) {
+        return res.status(401).json({ message: lang === 'pt' ? 'Não autorizado!' : 'Unauthorized!' });
+    }
+    // Get token from header
+    try {
+        token = token.split(' ')[1];
+    } catch (error) {
         return res.status(401).json({ message: lang === 'pt' ? 'Não autorizado!' : 'Unauthorized!' });
     }
     // Verify token

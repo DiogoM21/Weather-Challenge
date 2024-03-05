@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import BaseIcon from './BaseIcon.vue';
 
@@ -60,8 +60,6 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
-const inputEl = ref(null);
-
 const computedValue = computed({
     get: () => props.modelValue,
     set: (value) => emit('update:modelValue', value),
@@ -111,8 +109,6 @@ const computedValue = computed({
                 <input
                     v-else
                     :id="id"
-                    :ref="inputEl"
-                    v-model="computedValue"
                     :value="computedValue"
                     :type="type"
                     :autocomplete="autocomplete"
@@ -121,6 +117,7 @@ const computedValue = computed({
                     :maxlength="max"
                     class="px-2 py-2 pl-9 min-w-64 max-w-full bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg"
                     :class="{ 'cursor-not-allowed': disabled }"
+                    @input="($event) => (computedValue = $event.target.value)"
                 />
                 <div v-if="help" class="text-xs mt-1 text-black dark:text-gray-400">
                     {{ help }}

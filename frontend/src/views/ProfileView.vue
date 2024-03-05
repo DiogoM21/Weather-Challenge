@@ -44,6 +44,7 @@ const form = reactive({
     city_code: '',
     unit: selectUnits[0].value,
     lang: '',
+    created_at: '',
 });
 
 watchEffect(() => {
@@ -51,8 +52,9 @@ watchEffect(() => {
         form.email = user.value.email;
         form.name = user.value.name;
         form.city_code = user.value.city_code;
-        form.unit = user.value.unit;
-        form.lang = user.value.lang;
+        form.unit = user.value.unit || selectUnits[0].value;
+        form.lang = user.value.lang || mainStore.lang;
+        form.created_at = user.value.created_at;
     }
 });
 
@@ -74,6 +76,10 @@ onMounted(async () => {
                 }
             }
         });
+    } else {
+        if (!form.city_code) {
+            form.city_code = cityStore.cities[0].value;
+        }
     }
 });
 </script>
@@ -173,6 +179,13 @@ onMounted(async () => {
                         required
                     />
                 </div>
+            </div>
+            <div class="flex justify-center lg:justify-end my-2 lg:my-1 w-full px-8">
+                <span
+                    class="text-md font-semibold text-gray-700 dark:text-slate-400"
+                    :title="mainStore.lang === 'pt' ? 'Conta criada em' : 'Account created at'"
+                    >{{ form.created_at ?? null }}</span
+                >
             </div>
             <div class="flex justify-between items-center gap-6 my-4">
                 <BaseButton

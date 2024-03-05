@@ -40,7 +40,9 @@ const selectUnits = [
 
 const selectCities = computed(() => cityStore.cities);
 const selectedCity = ref(weatherStore.selectedCity);
-const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.selectedUnit).value);
+const selectedUnit = ref(
+    weatherStore.selectedUnit ? selectUnits.find((unit) => unit.value === weatherStore.selectedUnit).value : 'metric',
+);
 const selectedCount = ref(5);
 
 async function getCities(force = false) {
@@ -69,6 +71,10 @@ async function getCities(force = false) {
 
 async function getAPIWeather(force = false) {
     isRefreshing.value = true;
+    if (!selectedCity.value) {
+        isRefreshing.value = false;
+        return;
+    }
     weatherStore.getAPIWeather(selectedCity.value, selectedUnit.value, force).finally(() => {
         isRefreshing.value = false;
     });

@@ -63,6 +63,10 @@ onMounted(async () => {
                 }
             }
         });
+    } else {
+        if (!form.city_code) {
+            form.city_code = cityStore.cities[0].value;
+        }
     }
 });
 </script>

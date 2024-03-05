@@ -56,7 +56,7 @@ export const useWeatherStore = defineStore('weatherStore', () => {
     }
 
     // Get weather from API
-    async function getAPIWeather(cityId, unit, force) {
+    async function getAPIWeather(cityId = null, unit = null, force) {
         selectedCity.value = cityId;
         selectedUnit.value = unit;
         if (!force) {

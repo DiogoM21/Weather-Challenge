@@ -100,8 +100,13 @@ router.patch('/update', authenticateToken, async (req, res) => {
         // Hash password if provided
         const hashedPassword = password ? await bcrypt.hash(password, 10) : user.password;
         // Update user
-        const message = await updateUser(email, hashedPassword, name, unit, cityId, lang, req.db);
-        res.json({ message });
+        await updateUser(email, hashedPassword, name, unit, cityId, lang, req.db);
+        // Get updated user from database
+        const updatedUser = await checkDatabase(email, lang, req.db);
+        res.json({
+            message: lang === 'pt' ? 'Utilizador atualizado com sucesso!' : 'User updated successfully!',
+            user: updatedUser.user,
+        });
     } catch (error) {
         console.error(error);
         res.status(500).send({ message: error });
