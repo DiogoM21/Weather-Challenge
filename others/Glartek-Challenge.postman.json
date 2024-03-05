@@ -234,6 +234,63 @@
 							"response": []
 						},
 						{
+							"name": "Delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRpb2dvQGV4YW1wbGUuY29tIiwiaWF0IjoxNzA5NjIyNDcwfQ.rxjmKXbPDBhRQqBA7jNNnpmAnWUrgc5noVXh8QZ1-ew",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"diogo@example.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/delete?lang=pt",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"delete"
+									],
+									"query": [
+										{
+											"key": "lang",
+											"value": "pt"
+										}
+									]
+								},
+								"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+							},
+							"response": []
+						},
+						{
 							"name": "User",
 							"event": [
 								{
@@ -378,13 +435,13 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/cities/226709/weather?lang=pt&unit=metric&force=true",
+							"raw": "{{base_url}}/cities/2267094/weather?lang=pt&unit=metric&force=true",
 							"host": [
 								"{{base_url}}"
 							],
 							"path": [
 								"cities",
-								"226709",
+								"2267094",
 								"weather"
 							],
 							"query": [
