@@ -1,17 +1,14 @@
 import { defineStore } from 'pinia';
 import { useToast } from 'vue-toast-notification';
-import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
 import axios from 'axios';
 
 const $toast = useToast();
 
-const mainStore = useMainStore();
-
 // Back-End API URL
 const BACKENDURL = 'http://localhost:3000';
 
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore('authStore', () => {
     // Is Authenticated
     const auth = ref(false);
 
@@ -44,12 +41,12 @@ export const useAuthStore = defineStore('auth', () => {
                 $toast.error(response.data.message);
             }
         } catch (error) {
-            handleError(error);
+            handleError(error, lang === 'pt' ? 'Login falhou.' : 'Login failed.');
         }
     }
 
     // Register function
-    async function register(email, password, name, unit, lang) {
+    async function register(email, password, name, city, unit, lang) {
         try {
             // Check if email and password are not null
             if (!email || !password || !name) {
@@ -64,17 +61,18 @@ export const useAuthStore = defineStore('auth', () => {
                 email,
                 password,
                 name,
+                city,
                 unit,
             });
             // Check if register was successful
-            if (response.data.message) {
+            if (response.data.message && response.status === 200) {
                 $toast.success(response.data.message);
                 return true;
             } else {
                 $toast.error(response.data.message);
             }
         } catch (error) {
-            handleError(error);
+            handleError(error, lang === 'pt' ? 'Registo falhou.' : 'Register failed.');
         }
     }
 
@@ -96,12 +94,11 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     // Handle error from API
-    function handleError(error) {
-        let errorMsg = mainStore.lang === 'pt' ? 'Login falhou.' : 'Login failed.';
+    function handleError(error, msg) {
         try {
-            $toast.error(errorMsg + ' ' + error.response.data.message);
+            $toast.error(msg + ' ' + error.response.data.message);
         } catch {
-            $toast.error(errorMsg + ' ' + error);
+            $toast.error(msg + ' ' + error);
         }
     }
 

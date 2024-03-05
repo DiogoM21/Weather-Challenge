@@ -52,6 +52,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    small: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -74,8 +78,11 @@ const computedValue = computed({
                     :id="id"
                     :value="computedValue"
                     :disabled="disabled || (options && options.length === 0)"
-                    class="px-2 py-1 pl-9 min-w-44 max-w-full bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg"
-                    :class="disabled || (options && options.length === 0) ? 'cursor-not-allowed' : 'cursor-pointer'"
+                    class="bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg"
+                    :class="
+                        (disabled || (options && options.length === 0) ? 'cursor-not-allowed' : 'cursor-pointer',
+                        small ? 'px-2 py-1.5 pl-9 min-w-44' : 'px-2 py-2 pl-9 min-w-64')
+                    "
                     @input="computedValue = $event.target.value"
                 >
                     <option v-for="option in options" :key="option.id" :value="option.value">
@@ -108,13 +115,15 @@ const computedValue = computed({
                     :type="type"
                     :autocomplete="autocomplete"
                     :disabled="disabled"
+                    :minlength="min"
+                    :maxlength="max"
                     class="px-2 py-2 pl-9 min-w-64 max-w-full bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg"
                     :class="{ 'cursor-not-allowed': disabled }"
                 />
                 <div v-if="help" class="text-xs mt-1 text-black dark:text-gray-400">
                     {{ help }}
                 </div>
-                <BaseIcon v-if="icon" :path="icon" :size="16" class="absolute top-2 left-2 z-10 pointer-events-none" />
+                <BaseIcon v-if="icon" :path="icon" :size="16" class="absolute z-10 pointer-events-none top-2 left-2" />
             </div>
         </div>
     </div>

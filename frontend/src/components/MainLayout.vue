@@ -2,8 +2,8 @@
 import NavBar from './NavBar.vue';
 import LogoBar from './LogoBar.vue';
 import FooterBar from './FooterBar.vue';
-import { useMainStore } from '@/stores/main.js';
-import { useAuthStore } from '@/stores/auth.js';
+import { useMainStore } from '@/stores/mainStore.js';
+import { useAuthStore } from '@/stores/authStore.js';
 
 const mainStore = useMainStore();
 const authStore = useAuthStore();

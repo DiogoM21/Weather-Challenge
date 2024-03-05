@@ -41,9 +41,9 @@ connectWithRetry(db).then(() => {
     app.use(cors());
 
     // Controllers
-    const homeController = require('./controllers/home');
-    const authController = require('./controllers/auth');
-    const cityController = require('./controllers/city');
+    const homeController = require('./controllers/homeController');
+    const authController = require('./controllers/authController');
+    const { router: cityController } = require('./controllers/cityController');
 
     // Routes
     app.use('/', homeController);

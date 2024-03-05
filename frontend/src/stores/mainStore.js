@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { forceDocumentTitle } from '@/main.js';
 
-export const useMainStore = defineStore('main', () => {
+export const useMainStore = defineStore('mainStore', () => {
     // Website theme
     const darkMode = ref(true);
 

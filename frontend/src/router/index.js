@@ -20,6 +20,15 @@ const routes = [
         component: () => import('../views/LoginView.vue'),
     },
     {
+        meta: {
+            title: 'Register',
+            titlePT: 'Registar',
+        },
+        path: '/register',
+        name: 'register',
+        component: () => import('../views/RegisterView.vue'),
+    },
+    {
         path: '/:pathMatch(.*)*',
         redirect: '/',
     },

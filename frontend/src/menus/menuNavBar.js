@@ -45,7 +45,7 @@ export default [
         icon: mdiAccountPlus,
         label: 'Register',
         labelPT: 'Registar',
-        to: 'register',
+        route: 'register',
         isAuth: false,
     },
     {

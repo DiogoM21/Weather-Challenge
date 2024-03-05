@@ -16,8 +16,8 @@ const hasFooter = computed(() => slots.footer && !!slots.footer());
 <template>
     <component
         :is="isForm ? 'form' : 'div'"
-        :class="small ? 'mx-20 md:mx-56 lg:mx-72 xl:mx-96' : 'mx-12 md:mx-28 lg:mx-36 xl:mx-48 2xl:mx-80'"
-        class="flex flex-col items-center justify-center rounded-2xl py-6 my-2 bg-gradient-to-b from-blue-300/80 to-blue-400/80 dark:from-gray-800/90 dark:to-gray-900/90 shadow-md transition-all"
+        :class="small ? 'mx-20 md:mx-44 lg:mx-52 xl:mx-86 2xl:mx-96' : 'mx-12 md:mx-28 lg:mx-36 xl:mx-48 2xl:mx-80'"
+        class="flex flex-col items-center justify-center rounded-2xl py-8 my-2 bg-gradient-to-b from-blue-300/80 to-blue-400/80 dark:from-gray-800/90 dark:to-gray-900/90 shadow-md transition-all"
         @submit="emit('submit')"
     >
         <slot />

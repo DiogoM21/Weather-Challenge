@@ -19,9 +19,9 @@ import CardBox from './CardBox.vue';
 import BaseIcon from './BaseIcon.vue';
 import FormField from './FormField.vue';
 import NextWeatherCard from './NextWeatherCard.vue';
-import { useMainStore } from '@/stores/main';
-import { useCityStore } from '@/stores/city';
-import { useWeatherStore } from '@/stores/weather';
+import { useMainStore } from '@/stores/mainStore.js';
+import { useCityStore } from '@/stores/cityStore.js';
+import { useWeatherStore } from '@/stores/weatherStore.js';
 
 const mainStore = useMainStore();
 const cityStore = useCityStore();
@@ -186,6 +186,7 @@ function getIconWind(deg) {
                     :disabled="isRefreshing"
                     :label="mainStore.lang === 'pt' ? 'Cidade:' : 'City:'"
                     :icon="mdiHomeCity"
+                    small
                 />
                 <FormField
                     id="unit"
@@ -195,6 +196,7 @@ function getIconWind(deg) {
                     :disabled="isRefreshing"
                     :label="mainStore.lang === 'pt' ? 'Unidade:' : 'Unit:'"
                     :icon="selectUnits.find((unit) => unit.value === selectedUnit).icon"
+                    small
                 />
             </div>
             <div

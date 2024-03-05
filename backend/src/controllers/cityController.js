@@ -1,7 +1,7 @@
 const express = require('express');
 const util = require('util');
 const router = express.Router();
-const weatherController = require('./weather');
+const weatherController = require('./weatherController');
 
 // Function to get cities from database
 async function getCities(lang, db) {
@@ -17,7 +17,7 @@ async function getCities(lang, db) {
 }
 
 // Function to validate cityCode
-async function validatecityCode(cityCode, lang, db) {
+async function validateCityCode(cityCode, lang, db) {
     // Check if cityCode is a number
     if (isNaN(cityCode)) {
         return Promise.reject(lang === 'pt' ? 'Código de cidade deve ser um número!' : 'City code must be a number!');
@@ -26,9 +26,11 @@ async function validatecityCode(cityCode, lang, db) {
             // Get cities from database
             const cities = await getCities(lang, db);
             // Check if cityCode is valid
-            if (!cities.find((city) => city.code === parseInt(cityCode))) {
+            const city = cities.find((city) => city.code === parseInt(cityCode));
+            if (!city) {
                 return Promise.reject(lang === 'pt' ? 'Código de cidade não é válido!' : 'City code is not valid!');
             }
+            return Promise.resolve(city.id);
         } catch (error) {
             return Promise.reject(error);
         }
@@ -64,7 +66,7 @@ router.get('/:id/weather', async (req, res) => {
     const force = req.query.force || false;
     try {
         // Validate cityCode
-        await validatecityCode(cityCode, lang, req.db);
+        await validateCityCode(cityCode, lang, req.db);
         // Get weather from database
         if (!force) {
             // Check if weather is already in database
@@ -81,4 +83,7 @@ router.get('/:id/weather', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = {
+    validateCityCode,
+    router,
+};

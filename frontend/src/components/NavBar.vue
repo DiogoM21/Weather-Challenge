@@ -2,9 +2,9 @@
 import { computed } from 'vue';
 import BaseIcon from '@/components/BaseIcon.vue';
 import { RouterLink } from 'vue-router';
-import originalMenu from '@/menuNavBar.js';
-import { useMainStore } from '@/stores/main.js';
-import { useAuthStore } from '@/stores/auth.js';
+import originalMenu from '@/menus/menuNavBar.js';
+import { useMainStore } from '@/stores/mainStore.js';
+import { useAuthStore } from '@/stores/authStore.js';
 
 const mainStore = useMainStore();
 const authStore = useAuthStore();

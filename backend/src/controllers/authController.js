@@ -3,6 +3,7 @@ const util = require('util');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
+const cityController = require('./cityController');
 
 // Secret for JWT
 const JWT_SECRET = 'OW-SECRET';
@@ -21,12 +22,12 @@ async function checkUser(email, lang, db) {
 }
 
 // Function to register user
-async function registerUser(email, hashedPassword, name, unit, lang, db) {
+async function registerUser(email, hashedPassword, name, unit, city, lang, db) {
     // Insert user into database
-    const query = 'INSERT INTO users (email, password, name, unit, lang) VALUES (?, ?, ?, ?, ?)';
+    const query = 'INSERT INTO users (email, password, name, city_id, unit, lang) VALUES (?, ?, ?, ?, ?, ?)';
     const queryPromise = util.promisify(db.query).bind(db);
     try {
-        await queryPromise(query, [email, hashedPassword, name, unit, lang]);
+        await queryPromise(query, [email, hashedPassword, name, city, unit, lang]);
         return lang === 'pt' ? 'Utilizador registado com sucesso!' : 'User registered successfully!';
     } catch (error) {
         return Promise.reject(lang === 'pt' ? 'Erro ao registar utilizador!' : 'Error registering user!');
@@ -66,7 +67,7 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     const lang = req.query.lang || 'en';
     try {
-        const { email, password, name, unit } = req.body;
+        const { email, password, name, city, unit } = req.body;
         // Check if email and password are not null
         if (!email || !password) {
             return res.status(400).json({
@@ -81,10 +82,21 @@ router.post('/register', async (req, res) => {
                 message: lang === 'pt' ? 'Este e-mail já está registado!' : 'This email is already registered!',
             });
         }
+        // Validate password
+        if (password.length < 6) {
+            return res.status(400).json({
+                message:
+                    lang === 'pt'
+                        ? 'Palavra-passe deve ter no mínimo 6 caracteres!'
+                        : 'Password must have at least 6 characters!',
+            });
+        }
+        // Validate city
+        const cityId = await cityController.validateCityCode(city, lang, req.db);
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
         // Register user
-        const message = await registerUser(email, hashedPassword, name, unit, lang, req.db);
+        const message = await registerUser(email, hashedPassword, name, unit, cityId, lang, req.db);
         res.json({ message });
     } catch (error) {
         console.error(error);

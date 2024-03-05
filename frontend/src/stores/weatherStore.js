@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { useToast } from 'vue-toast-notification';
-import { useMainStore } from '@/stores/main';
+import { useMainStore } from '@/stores/mainStore.js';
 import axios from 'axios';
 import { ref } from 'vue';
 
@@ -11,7 +11,7 @@ const BACKENDURL = 'http://localhost:3000';
 
 const mainStore = useMainStore();
 
-export const useWeatherStore = defineStore('weather', () => {
+export const useWeatherStore = defineStore('weatherStore', () => {
     // Selected values
     const selectedCity = ref(null);
     const selectedUnit = ref('metric');

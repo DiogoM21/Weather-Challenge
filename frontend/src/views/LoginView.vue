@@ -2,8 +2,8 @@
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { mdiEmail, mdiAsterisk, mdiLoginVariant, mdiCloseCircleOutline } from '@mdi/js';
-import { useMainStore } from '@/stores/main.js';
-import { useAuthStore } from '@/stores/auth.js';
+import { useMainStore } from '@/stores/mainStore.js';
+import { useAuthStore } from '@/stores/authStore.js';
 import CardBox from '@/components/CardBox.vue';
 import FormField from '@/components/FormField.vue';
 import BaseButton from '@/components/BaseButton.vue';
@@ -20,8 +20,10 @@ const form = reactive({
 });
 
 const submit = async () => {
-    await authStore.login(form.email, form.password, mainStore.lang).then(() => {
-        router.push({ name: 'home' });
+    await authStore.login(form.email, form.password, mainStore.lang).then((success) => {
+        if (success) {
+            router.push({ name: 'home' });
+        }
     });
 };
 </script>
@@ -29,6 +31,9 @@ const submit = async () => {
 <template>
     <MainLayout>
         <CardBox small is-form @submit="submit">
+            <span class="text-4xl font-semibold mb-2">
+                {{ mainStore.lang === 'pt' ? 'Entrar' : 'Login' }}
+            </span>
             <div class="flex flex-col gap-4 my-4">
                 <FormField
                     id="email"
@@ -37,6 +42,8 @@ const submit = async () => {
                     label="Email"
                     type="email"
                     autocomplete="email"
+                    :min="0"
+                    :max="255"
                     :help="mainStore.lang === 'pt' ? 'Email da sua conta. Obrigatório' : 'Your account email. Required'"
                     required
                 />
@@ -47,6 +54,8 @@ const submit = async () => {
                     label="Palavra-Passe"
                     type="password"
                     autocomplete="current-password"
+                    :min="0"
+                    :max="255"
                     :help="
                         mainStore.lang === 'pt'
                             ? 'Palavra-passe da sua conta. Obrigatório'

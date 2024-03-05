@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: db
--- Tempo de geração: 04-Mar-2024 às 23:26
+-- Tempo de geração: 05-Mar-2024 às 02:19
 -- Versão do servidor: 11.3.2-MariaDB-1:11.3.2+maria~ubu2204
 -- versão do PHP: 8.2.8
 
@@ -55,6 +55,7 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
   `name` varchar(255) NOT NULL,
+  `city_id` bigint(20) DEFAULT NULL,
   `unit` enum('metric','default','imperial') NOT NULL DEFAULT 'metric',
   `lang` enum('pt','en') NOT NULL DEFAULT 'en',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -119,7 +120,7 @@ ALTER TABLE `cities`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `unique_email` (`email`);
+  ADD KEY `city` (`city_id`);
 
 --
 -- Índices para tabela `weather`
@@ -150,23 +151,29 @@ ALTER TABLE `cities`
 -- AUTO_INCREMENT de tabela `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `weather`
 --
 ALTER TABLE `weather`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=160;
 
 --
 -- AUTO_INCREMENT de tabela `weather_next`
 --
 ALTER TABLE `weather_next`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1362;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1412;
 
 --
 -- Restrições para despejos de tabelas
 --
+
+--
+-- Limitadores para a tabela `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `city` FOREIGN KEY (`city_id`) REFERENCES `cities` (`id`) ON DELETE SET NULL;
 
 --
 -- Limitadores para a tabela `weather`

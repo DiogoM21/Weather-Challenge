@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { useToast } from 'vue-toast-notification';
-import { useMainStore } from '@/stores/main';
+import { useMainStore } from '@/stores/mainStore.js';
 import axios from 'axios';
 
 const $toast = useToast();
@@ -10,7 +10,7 @@ const BACKENDURL = 'http://localhost:3000';
 
 const mainStore = useMainStore();
 
-export const useCityStore = defineStore('city', () => {
+export const useCityStore = defineStore('cityStore', () => {
     // Check if city is already in storage
     function checkStorage() {
         // Get storage
