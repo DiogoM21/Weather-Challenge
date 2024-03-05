@@ -30,7 +30,7 @@ const weatherStore = useWeatherStore();
 const weather = computed(() => weatherStore.weather);
 const filteredNextWeather = computed(() => weather?.value?.next?.slice(0, selectedCount.value) ?? []);
 const isRefreshing = ref(false);
-const showNext = ref(true);
+const showNextWeather = ref(true);
 
 const selectUnits = [
     { label: 'Celsius', value: 'metric', icon: mdiTemperatureCelsius },
@@ -38,43 +38,41 @@ const selectUnits = [
     { label: 'Fahrenheit', value: 'imperial', icon: mdiTemperatureFahrenheit },
 ];
 
-const selectCities = computed(() => cityStore.cities);
-const selectedCity = ref(weatherStore.selectedCity);
-const selectedUnit = ref(
-    weatherStore.selectedUnit ? selectUnits.find((unit) => unit.value === weatherStore.selectedUnit).value : 'metric',
-);
 const selectedCount = ref(5);
+const selectCities = computed(() => cityStore.cities);
+const selectedCity = computed({
+    get: () => weatherStore.selectedCity,
+    set: (value) => {
+        weatherStore.selectedCity = value;
+    },
+});
+const selectedUnit = computed({
+    get: () => weatherStore.selectedUnit,
+    set: (value) => {
+        weatherStore.selectedUnit = value;
+    },
+});
 
 async function getCities(force = false) {
     isRefreshing.value = true;
     await cityStore
         .getAPICities(force)
-        .then((cities) => {
-            if (cities && cities.length > 0) {
-                if (!selectedCity.value) {
-                    selectedCity.value = cities[0].value;
-                } else {
-                    const city = cities.find((c) => c.value === selectedCity.value);
-                    if (!city) {
-                        selectedCity.value = cities[0].value;
-                    }
-                }
-                if (force) {
-                    getAPIWeather(true);
-                }
+        .then(() => {
+            if (selectCities.value.length > 0 && !selectedCity.value) {
+                selectedCity.value = selectCities.value[0].value;
             }
         })
         .finally(() => {
             isRefreshing.value = false;
+            getAPIWeather(force, true);
         });
 }
 
 async function getAPIWeather(force = false) {
-    isRefreshing.value = true;
-    if (!selectedCity.value) {
-        isRefreshing.value = false;
+    if (isRefreshing.value || !selectedCity.value) {
         return;
     }
+    isRefreshing.value = true;
     weatherStore.getAPIWeather(selectedCity.value, selectedUnit.value, force).finally(() => {
         isRefreshing.value = false;
     });
@@ -95,8 +93,8 @@ watch([() => selectedCount.value], () => {
 });
 
 function toggleNext() {
-    showNext.value = !showNext.value;
-    if (!showNext.value) {
+    showNextWeather.value = !showNextWeather.value;
+    if (!showNextWeather.value) {
         selectedCount.value = 5;
     }
 }
@@ -268,13 +266,13 @@ function getIconWind(deg) {
             >
         </div>
         <BaseIcon
-            :path="showNext ? mdiArrowUp : mdiArrowDown"
+            :path="showNextWeather ? mdiArrowUp : mdiArrowDown"
             :size="24"
             :title="mainStore.lang === 'pt' ? 'Mostrar / Ocultar Tempo' : 'Show / Hide Weather'"
             class="mt-2 md:-mt-4 hover:text-blue-700 dark:hover:text-sky-500 transition-all hover:scale-110 cursor-pointer"
             @click="toggleNext"
         />
-        <div v-if="showNext" class="w-full px-6">
+        <div v-if="showNextWeather" class="w-full px-6">
             <hr class="border-t-2 border-gray-300 dark:border-slate-500 my-4" />
             <NextWeatherCard
                 :next-weather="filteredNextWeather"

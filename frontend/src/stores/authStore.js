@@ -40,7 +40,7 @@ export const useAuthStore = defineStore('authStore', () => {
                 password: password,
             });
             // Check if login was successful
-            if (response.data.accessToken) {
+            if (response.status === 200 && response.data.accessToken && response.data.user) {
                 // Save token to storage
                 saveUserData(response.data, true);
                 $toast.success(response.data.user.lang === 'pt' ? 'Login efetuado com sucesso!' : 'Login successful!');
@@ -74,7 +74,7 @@ export const useAuthStore = defineStore('authStore', () => {
                 lang,
             });
             // Check if register was successful
-            if (response.data.message && response.status === 200) {
+            if (response.status === 200) {
                 $toast.success(response.data.message);
                 router.replace('/login');
             } else {
@@ -106,7 +106,7 @@ export const useAuthStore = defineStore('authStore', () => {
                 },
             );
             // Check if update was successful
-            if (response.data.message && response.status === 200) {
+            if (response.status === 200 && response.data.user) {
                 $toast.success(response.data.message);
                 saveUserData(response.data, false);
             } else {
@@ -120,11 +120,8 @@ export const useAuthStore = defineStore('authStore', () => {
     // Function to save data to storage
     function saveUserData(data, isLogin) {
         if (isLogin) {
-            auth.value = true;
-            token.value = data.accessToken;
             localStorage.setItem('OW-token', data.accessToken);
         }
-        user.value = data.user;
         localStorage.setItem('OW-user', JSON.stringify(data.user));
     }
 
@@ -132,13 +129,13 @@ export const useAuthStore = defineStore('authStore', () => {
     function checkAuth() {
         try {
             // Restore token from storage
-            const storageToken = localStorage.getItem('OW-token');
+            const storageToken = localStorage.getItem('OW-token') || null;
             if (storageToken) {
                 auth.value = true;
                 token.value = storageToken;
                 // Restore user from storage
-                const storageUser = localStorage.getItem('OW-user');
-                if (storageUser && storageUser !== 'null') {
+                const storageUser = localStorage.getItem('OW-user') || null;
+                if (storageUser) {
                     user.value = JSON.parse(storageUser);
                     mainStore.toggleLang(user.value.lang === 'pt' ? 'pt' : 'en');
                     if (user.value.city_code) {

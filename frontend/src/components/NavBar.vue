@@ -8,7 +8,6 @@ import { useMainStore } from '@/stores/mainStore.js';
 import { useAuthStore } from '@/stores/authStore.js';
 
 const router = useRouter();
-
 const mainStore = useMainStore();
 const authStore = useAuthStore();
 

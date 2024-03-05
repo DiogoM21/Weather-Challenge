@@ -4,13 +4,13 @@ import { mdiMinus, mdiPlus } from '@mdi/js';
 import BaseIcon from './BaseIcon.vue';
 
 const props = defineProps({
-    modelValue: {
-        type: [String, Number, Boolean, Object, Array],
-        default: '',
-    },
     id: {
         type: String,
         default: null,
+    },
+    modelValue: {
+        type: [String, Number, Boolean, Object, Array],
+        default: '',
     },
     type: {
         type: String,

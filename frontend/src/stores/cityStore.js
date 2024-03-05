@@ -53,18 +53,21 @@ export const useCityStore = defineStore('cityStore', () => {
 
     // Get cities from API
     async function getAPICities(force) {
-        if (!force) {
-            // Check if city is already in storage
-            const storage = checkStorage();
-            if (storage) return (cities.value = storage);
-        }
         try {
+            if (!force) {
+                // Check if city is already in storage
+                const storage = checkStorage();
+                if (storage) {
+                    cities.value = storage;
+                    return;
+                }
+            }
             // Get data from API and save it to storage
             const apiResponse = await axios.get(`${BACKENDURL}/cities?lang=${mainStore.lang}`);
             if (apiResponse.data.cities && apiResponse.data.cities.length > 0) {
                 storeCities(apiResponse.data.cities);
             }
-            return (cities.value = apiResponse.data.cities);
+            cities.value = apiResponse.data.cities;
         } catch (error) {
             handleError(error);
         }

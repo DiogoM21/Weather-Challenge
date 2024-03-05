@@ -1,4 +1,5 @@
 <script setup>
+import { onMounted } from 'vue';
 import NavBar from './NavBar.vue';
 import LogoBar from './LogoBar.vue';
 import FooterBar from './FooterBar.vue';
@@ -8,7 +9,9 @@ import { useAuthStore } from '@/stores/authStore.js';
 const mainStore = useMainStore();
 const authStore = useAuthStore();
 
-authStore.checkAuth();
+onMounted(() => {
+    authStore.checkAuth();
+});
 </script>
 
 <template>

@@ -56,23 +56,26 @@ export const useWeatherStore = defineStore('weatherStore', () => {
     }
 
     // Get weather from API
-    async function getAPIWeather(cityId = null, unit = null, force) {
-        selectedCity.value = cityId;
+    async function getAPIWeather(cityCode = null, unit = 'metric', force = false) {
+        selectedCity.value = cityCode;
         selectedUnit.value = unit;
-        if (!force) {
-            // Check if weather is already in storage
-            const storage = checkStorage();
-            if (storage) weather.value = storage;
-        }
         try {
+            if (!force) {
+                // Check if weather is already in storage
+                const storage = checkStorage();
+                if (storage) {
+                    weather.value = storage;
+                    return;
+                }
+            }
             // Get data from API and save it to storage
             const apiResponse = await axios.get(
                 `${BACKENDURL}/cities/${selectedCity.value}/weather?unit=${selectedUnit.value}&lang=${mainStore.lang}&force=${force}`,
             );
             if (apiResponse.data.values) {
                 storeWeather(apiResponse.data);
+                weather.value = apiResponse.data;
             }
-            weather.value = apiResponse.data;
         } catch (error) {
             handleError(error);
         }
