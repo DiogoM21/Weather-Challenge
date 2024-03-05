@@ -179,6 +179,7 @@ function getIconWind(deg) {
         >
             <div class="flex flex-row lg:flex-col mb-6 my-1 lg:mb-0 items-center gap-3 md:gap-4 justify-center">
                 <FormField
+                    id="city"
                     v-model="selectedCity"
                     type="select"
                     :options="selectCities"
@@ -187,6 +188,7 @@ function getIconWind(deg) {
                     :icon="mdiHomeCity"
                 />
                 <FormField
+                    id="unit"
                     v-model="selectedUnit"
                     type="select"
                     :options="selectUnits"

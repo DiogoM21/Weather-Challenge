@@ -34,12 +34,12 @@ const menuClick = (item) => {
         <div class="grid justify-items-center grid-cols-6 gap-4 max-w-7xl mx-auto h-full">
             <div v-for="item in menu" :key="item.label">
                 <component
-                    :is="item.route ? RouterLink : item.href ? 'a' : 'div'"
+                    :is="item.route ? RouterLink : item.href ? 'a' : 'button'"
                     :to="item.route"
-                    :href="item.href"
+                    :href="item.href ?? null"
                     :title="isLangPT ? item.labelPT || item.hoverPT : item.label || item.hover"
                     class="flex items-center h-14 px-2 transition-all cursor-pointer hover:font-medium dark:hover:text-sky-500 hover:scale-105"
-                    target="_blank"
+                    :target="item.href ? '_blank' : null"
                     :class="
                         item.hover
                             ? 'text-blue-600 dark:text-sky-200 hover:text-blue-900'

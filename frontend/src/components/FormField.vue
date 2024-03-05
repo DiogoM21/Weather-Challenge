@@ -8,15 +8,27 @@ const props = defineProps({
         type: [String, Number, Boolean, Object, Array],
         default: null,
     },
+    id: {
+        type: String,
+        default: null,
+    },
     type: {
         type: String,
         default: 'text',
+    },
+    autocomplete: {
+        type: String,
+        default: null,
     },
     options: {
         type: Array,
         default: () => [],
     },
     label: {
+        type: String,
+        default: null,
+    },
+    help: {
         type: String,
         default: null,
     },
@@ -36,6 +48,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    required: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -51,11 +67,11 @@ const computedValue = computed({
 <template>
     <div>
         <div class="flex-grow">
-            <label v-if="label" :for="label" class="block font-bold mb-2">{{ label }}</label>
+            <label v-if="label" :for="id" class="block font-bold mb-2">{{ label }}</label>
             <div class="relative text-black dark:text-white">
                 <select
                     v-if="type === 'select'"
-                    :id="label"
+                    :id="id"
                     :value="computedValue"
                     :disabled="disabled || (options && options.length === 0)"
                     class="px-2 py-1 pl-9 min-w-44 max-w-full bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg"
@@ -67,7 +83,7 @@ const computedValue = computed({
                     </option>
                 </select>
                 <div
-                    v-if="type === 'numberButton'"
+                    v-else-if="type === 'numberButton'"
                     class="flex flex-row items-center gap-4 justify-center my-auto"
                     :class="{ 'animate-pulse': disabled }"
                 >
@@ -85,12 +101,20 @@ const computedValue = computed({
                         @click="disabled || (computedValue + 1 <= max && (computedValue += 1))"
                     />
                 </div>
-                <BaseIcon
-                    v-if="icon"
-                    :path="icon"
-                    :size="16"
-                    class="absolute top-1.5 left-2 z-10 pointer-events-none"
+                <input
+                    v-else
+                    :id="id"
+                    v-model="computedValue"
+                    :type="type"
+                    :autocomplete="autocomplete"
+                    :disabled="disabled"
+                    class="px-2 py-2 pl-9 min-w-64 max-w-full bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg"
+                    :class="{ 'cursor-not-allowed': disabled }"
                 />
+                <div v-if="help" class="text-xs mt-1 text-black dark:text-gray-400">
+                    {{ help }}
+                </div>
+                <BaseIcon v-if="icon" :path="icon" :size="16" class="absolute top-2 left-2 z-10 pointer-events-none" />
             </div>
         </div>
     </div>

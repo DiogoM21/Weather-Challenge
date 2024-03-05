@@ -6,7 +6,7 @@ const weatherController = require('./weather');
 // Function to get cities from database
 async function getCities(lang, db) {
     // Get cities from database
-    const query = 'SELECT * FROM cites';
+    const query = 'SELECT * FROM cities';
     const queryPromise = util.promisify(db.query).bind(db);
     try {
         const results = await queryPromise(query);

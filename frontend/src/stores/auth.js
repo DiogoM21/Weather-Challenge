@@ -1,10 +1,12 @@
 import { defineStore } from 'pinia';
 import { useToast } from 'vue-toast-notification';
+import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
 import axios from 'axios';
 
 const $toast = useToast();
-const bcrypt = require('bcryptjs');
+
+const mainStore = useMainStore();
 
 // Back-End API URL
 const BACKENDURL = 'http://localhost:3000';
@@ -25,12 +27,10 @@ export const useAuthStore = defineStore('auth', () => {
                     lang === 'pt' ? 'E-mail e palavra-passe são obrigatórios!' : 'Email and password are required!',
                 );
             }
-            // Hash password
-            const hashedPassword = await bcrypt.hash(password, 10);
             // Send login request to API
             const response = await axios.post(`${BACKENDURL}/auth/login?lang=${lang}`, {
-                email,
-                password: hashedPassword,
+                email: email,
+                password: password,
             });
             // Check if login was successful
             if (response.data.accessToken) {
@@ -38,13 +38,13 @@ export const useAuthStore = defineStore('auth', () => {
                 localStorage.setItem('OW-token', response.data.accessToken);
                 token.value = response.data.accessToken;
                 auth.value = true;
+                $toast.success(lang === 'pt' ? 'Login efetuado com sucesso!' : 'Login successful!');
                 return true;
             } else {
                 $toast.error(response.data.message);
             }
         } catch (error) {
-            console.error(error);
-            $toast.error(error);
+            handleError(error);
         }
     }
 
@@ -74,8 +74,17 @@ export const useAuthStore = defineStore('auth', () => {
                 $toast.error(response.data.message);
             }
         } catch (error) {
-            console.error(error);
-            $toast.error(error);
+            handleError(error);
+        }
+    }
+
+    // Handle error from API
+    function handleError(error) {
+        let errorMsg = mainStore.lang === 'pt' ? 'Login falhou.' : 'Login failed.';
+        try {
+            $toast.error(errorMsg + ' ' + error.response.data.message);
+        } catch {
+            $toast.error(errorMsg + ' ' + error);
         }
     }
 
