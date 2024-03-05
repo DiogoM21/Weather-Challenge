@@ -35,6 +35,16 @@ if (typeof localStorage !== 'undefined') {
 // Set default document title
 const defaultDocumentTitle = 'Open Weather';
 
+// Set document title on language change
+router.beforeEach((to, from, next) => {
+    // Redirect to login if not authenticated
+    if (to.meta.requiresAuth && !localStorage.getItem('OW-token')) {
+        next({ name: 'login' });
+    } else {
+        next();
+    }
+});
+
 // Set document title on route change
 router.afterEach((to) => {
     switch (mainStore.lang) {

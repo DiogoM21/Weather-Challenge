@@ -29,6 +29,16 @@ const routes = [
         component: () => import('../views/RegisterView.vue'),
     },
     {
+        meta: {
+            title: 'Profile',
+            titlePT: 'Perfil',
+            requiresAuth: true,
+        },
+        path: '/profile',
+        name: 'profile',
+        component: () => import('../views/ProfileView.vue'),
+    },
+    {
         path: '/:pathMatch(.*)*',
         redirect: '/',
     },

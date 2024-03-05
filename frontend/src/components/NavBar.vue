@@ -1,10 +1,13 @@
 <script setup>
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import BaseIcon from '@/components/BaseIcon.vue';
 import { RouterLink } from 'vue-router';
 import originalMenu from '@/menus/menuNavBar.js';
 import { useMainStore } from '@/stores/mainStore.js';
 import { useAuthStore } from '@/stores/authStore.js';
+
+const router = useRouter();
 
 const mainStore = useMainStore();
 const authStore = useAuthStore();
@@ -24,6 +27,9 @@ const menuClick = (item) => {
     }
     if (item.isLogout) {
         authStore.logout();
+        if (router.currentRoute.value.name === 'profile') {
+            router.push({ name: 'login' });
+        }
     }
 };
 </script>

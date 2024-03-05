@@ -38,7 +38,7 @@ const selectUnits = [
     { label: 'Fahrenheit', value: 'imperial', icon: mdiTemperatureFahrenheit },
 ];
 
-const selectCities = ref(null);
+const selectCities = computed(() => cityStore.cities);
 const selectedCity = ref(weatherStore.selectedCity);
 const selectedUnit = ref(selectUnits.find((unit) => unit.value === weatherStore.selectedUnit).value);
 const selectedCount = ref(5);
@@ -49,7 +49,6 @@ async function getCities(force = false) {
         .getAPICities(force)
         .then((cities) => {
             if (cities && cities.length > 0) {
-                selectCities.value = cities;
                 if (!selectedCity.value) {
                     selectedCity.value = cities[0].value;
                 } else {

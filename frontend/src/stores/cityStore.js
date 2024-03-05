@@ -1,3 +1,4 @@
+import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import { useToast } from 'vue-toast-notification';
 import { useMainStore } from '@/stores/mainStore.js';
@@ -11,6 +12,9 @@ const BACKENDURL = 'http://localhost:3000';
 const mainStore = useMainStore();
 
 export const useCityStore = defineStore('cityStore', () => {
+    // City data
+    const cities = ref(null);
+
     // Check if city is already in storage
     function checkStorage() {
         // Get storage
@@ -52,7 +56,7 @@ export const useCityStore = defineStore('cityStore', () => {
         if (!force) {
             // Check if city is already in storage
             const storage = checkStorage();
-            if (storage) return storage;
+            if (storage) return (cities.value = storage);
         }
         try {
             // Get data from API and save it to storage
@@ -60,7 +64,7 @@ export const useCityStore = defineStore('cityStore', () => {
             if (apiResponse.data.cities && apiResponse.data.cities.length > 0) {
                 storeCities(apiResponse.data.cities);
             }
-            return apiResponse.data.cities;
+            return (cities.value = apiResponse.data.cities);
         } catch (error) {
             handleError(error);
         }
@@ -77,6 +81,7 @@ export const useCityStore = defineStore('cityStore', () => {
     }
 
     return {
+        cities,
         getAPICities,
     };
 });

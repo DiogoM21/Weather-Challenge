@@ -1,12 +1,12 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { mdiMinus, mdiPlus } from '@mdi/js';
 import BaseIcon from './BaseIcon.vue';
 
 const props = defineProps({
     modelValue: {
         type: [String, Number, Boolean, Object, Array],
-        default: null,
+        default: '',
     },
     id: {
         type: String,
@@ -60,11 +60,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue']);
 
+const inputEl = ref(null);
+
 const computedValue = computed({
     get: () => props.modelValue,
-    set: (value) => {
-        emit('update:modelValue', value);
-    },
+    set: (value) => emit('update:modelValue', value),
 });
 </script>
 
@@ -76,6 +76,7 @@ const computedValue = computed({
                 <select
                     v-if="type === 'select'"
                     :id="id"
+                    v-model="computedValue"
                     :value="computedValue"
                     :disabled="disabled || (options && options.length === 0)"
                     class="bg-gray-50 dark:bg-gray-600/60 focus:ring focus:outline-none border-gray-500 dark:border-gray-900 rounded-lg"
@@ -83,7 +84,6 @@ const computedValue = computed({
                         (disabled || (options && options.length === 0) ? 'cursor-not-allowed' : 'cursor-pointer',
                         small ? 'px-2 py-1.5 pl-9 min-w-44' : 'px-2 py-2 pl-9 min-w-64')
                     "
-                    @input="computedValue = $event.target.value"
                 >
                     <option v-for="option in options" :key="option.id" :value="option.value">
                         {{ option.label }}
@@ -111,7 +111,9 @@ const computedValue = computed({
                 <input
                     v-else
                     :id="id"
+                    :ref="inputEl"
                     v-model="computedValue"
+                    :value="computedValue"
                     :type="type"
                     :autocomplete="autocomplete"
                     :disabled="disabled"

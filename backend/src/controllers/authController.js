@@ -10,19 +10,6 @@ const router = express.Router();
 // Secret for JWT
 const JWT_SECRET = 'OW-SECRET';
 
-// Function to check user
-async function checkUser(email, lang, db) {
-    // Get user from database
-    const query = 'SELECT * FROM users WHERE email = ?';
-    const queryPromise = util.promisify(db.query).bind(db);
-    try {
-        const results = await queryPromise(query, [email]);
-        return results[0];
-    } catch (error) {
-        return Promise.reject(lang === 'pt' ? 'Erro ao verificar utilizador!' : 'Error checking user!');
-    }
-}
-
 // Function to register user
 async function registerUser(email, hashedPassword, name, unit, city_id, lang, db) {
     // Insert user into database
@@ -49,7 +36,7 @@ router.post('/login', async (req, res) => {
             });
         }
         // Get user from database
-        const user = await checkUser(email, lang, req.db);
+        const user = await userController.checkUser(email, lang, req.db);
         // Check if user exists and password is correct
         if (!user || !(await bcrypt.compare(password, user.password))) {
             return res
@@ -73,15 +60,17 @@ router.post('/register', async (req, res) => {
     try {
         const { email, password, name, unit } = req.body;
         const cityCode = req.body.city_code;
-        // Check if email and password are not null
-        if (!email || !password) {
+        // Check if email, password and name are not null
+        if (!email || !password || !name) {
             return res.status(400).json({
                 message:
-                    lang === 'pt' ? 'E-mail e palavra-passe são obrigatórios!' : 'Email and password are required!',
+                    lang === 'pt'
+                        ? 'E-mail, palavra-passe e nome são obrigatórios!'
+                        : 'Email, password and name are required!',
             });
         }
         // Check if user already exists
-        const user = await checkUser(email, lang, req.db);
+        const user = await userController.checkUser(email, lang, req.db);
         if (user) {
             return res.status(400).json({
                 message: lang === 'pt' ? 'Este e-mail já está registado!' : 'This email is already registered!',

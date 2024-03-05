@@ -84,12 +84,49 @@ export const useAuthStore = defineStore('authStore', () => {
         }
     }
 
+    // Function to update user data
+    function updateUser(email, password, name, city_code, unit, lang) {
+        try {
+            // Send update request to API
+            axios
+                .patch(
+                    `${BACKENDURL}/user/update?lang=${lang}`,
+                    {
+                        email,
+                        password,
+                        name,
+                        city_code,
+                        unit,
+                    },
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token.value}`,
+                        },
+                    },
+                )
+                .then((response) => {
+                    // Check if update was successful
+                    if (response.data.message && response.status === 200) {
+                        $toast.success(response.data.message);
+                        saveUserData(response.data);
+                        mainStore.toggleLang(response.data.user.lang === 'pt' ? 'pt' : 'en');
+                        weatherStore.getAPIWeather(response.data.user.city_code, response.data.user.unit, false);
+                    } else {
+                        $toast.error(response.data.message);
+                    }
+                })
+                .catch((error) => {
+                    handleError(error, lang === 'pt' ? 'Atualização falhou.' : 'Update failed.');
+                });
+        } catch (error) {
+            handleError(error, lang === 'pt' ? 'Atualização falhou.' : 'Update failed.');
+        }
+    }
+
     // Function to save data to storage
     function saveUserData(data) {
-        token.value = data.accessToken;
         localStorage.setItem('OW-token', data.accessToken);
         localStorage.setItem('OW-user', JSON.stringify(data.user));
-        auth.value = true;
     }
 
     // Function to restore token from storage
@@ -104,7 +141,7 @@ export const useAuthStore = defineStore('authStore', () => {
             if (storageUser) {
                 user.value = JSON.parse(storageUser);
                 mainStore.toggleLang(user.value.lang === 'pt' ? 'pt' : 'en');
-                weatherStore.getAPIWeather(user.value.city_code, user.value.unit);
+                weatherStore.getAPIWeather(user.value.city_code, user.value.unit, false);
             }
         }
     }
@@ -131,8 +168,10 @@ export const useAuthStore = defineStore('authStore', () => {
     return {
         auth,
         token,
+        user,
         login,
         register,
+        updateUser,
         checkAuth,
         logout,
     };

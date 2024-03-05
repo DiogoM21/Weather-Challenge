@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, computed } from 'vue';
+import { reactive, onMounted, computed, watchEffect } from 'vue';
 import {
     mdiEmail,
     mdiAsterisk,
@@ -24,6 +24,7 @@ const authStore = useAuthStore();
 const cityStore = useCityStore();
 
 const selectCities = computed(() => cityStore.cities);
+const user = computed(() => authStore.user);
 
 const selectUnits = [
     { label: 'Celsius', value: 'metric', icon: mdiTemperatureCelsius },
@@ -42,11 +43,21 @@ const form = reactive({
     name: '',
     city_code: '',
     unit: selectUnits[0].value,
-    lang: mainStore.lang,
+    lang: '',
+});
+
+watchEffect(() => {
+    if (user.value) {
+        form.email = user.value.email;
+        form.name = user.value.name;
+        form.city_code = user.value.city_code;
+        form.unit = user.value.unit;
+        form.lang = user.value.lang;
+    }
 });
 
 const submit = async () => {
-    await authStore.register(form.email, form.password, form.name, form.city_code, form.unit, form.lang);
+    await authStore.updateUser(form.email, form.password, form.name, form.city_code, form.unit, form.lang);
 };
 
 onMounted(async () => {
@@ -71,7 +82,7 @@ onMounted(async () => {
     <MainLayout>
         <CardBox small is-form @submit.prevent="submit">
             <span class="text-4xl font-semibold mb-2">
-                {{ mainStore.lang === 'pt' ? 'Registar' : 'Register' }}
+                {{ mainStore.lang === 'pt' ? 'Perfil' : 'Profile' }}
             </span>
             <div class="flex flex-col lg:flex-row gap-4 my-4">
                 <div class="flex flex-col gap-4">
@@ -167,26 +178,14 @@ onMounted(async () => {
                 <BaseButton
                     type="submit"
                     color="sucess"
-                    :label="mainStore.lang === 'pt' ? 'Registar' : 'Register'"
+                    :label="mainStore.lang === 'pt' ? 'Guardar' : 'Save'"
                     :icon="mdiAccountPlus"
                     :class="{
                         'opacity-25':
-                            form.processing ||
-                            !form.email ||
-                            !form.password ||
-                            !form.name ||
-                            !form.city_code ||
-                            !form.unit ||
-                            !form.lang,
+                            form.processing || !form.email || !form.name || !form.city_code || !form.unit || !form.lang,
                     }"
                     :disabled="
-                        form.processing ||
-                        !form.email ||
-                        !form.password ||
-                        !form.name ||
-                        !form.city_code ||
-                        !form.unit ||
-                        !form.lang
+                        form.processing || !form.email || !form.name || !form.city_code || !form.unit || !form.lang
                     "
                 />
                 <BaseButton
