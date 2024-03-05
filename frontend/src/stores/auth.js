@@ -78,6 +78,23 @@ export const useAuthStore = defineStore('auth', () => {
         }
     }
 
+    // Function to restore token from storage
+    function checkAuth() {
+        const storageToken = localStorage.getItem('OW-token');
+        if (storageToken) {
+            token.value = storageToken;
+            auth.value = true;
+        }
+    }
+
+    // Function to logout
+    function logout() {
+        // Remove token from storage
+        localStorage.removeItem('OW-token');
+        token.value = null;
+        auth.value = false;
+    }
+
     // Handle error from API
     function handleError(error) {
         let errorMsg = mainStore.lang === 'pt' ? 'Login falhou.' : 'Login failed.';
@@ -93,5 +110,7 @@ export const useAuthStore = defineStore('auth', () => {
         token,
         login,
         register,
+        checkAuth,
+        logout,
     };
 });

@@ -3,8 +3,12 @@ import NavBar from './NavBar.vue';
 import LogoBar from './LogoBar.vue';
 import FooterBar from './FooterBar.vue';
 import { useMainStore } from '@/stores/main.js';
+import { useAuthStore } from '@/stores/auth.js';
 
 const mainStore = useMainStore();
+const authStore = useAuthStore();
+
+authStore.checkAuth();
 </script>
 
 <template>

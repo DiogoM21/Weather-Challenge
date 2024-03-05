@@ -9,10 +9,11 @@ import { useAuthStore } from '@/stores/auth.js';
 const mainStore = useMainStore();
 const authStore = useAuthStore();
 
-const isAuth = authStore.auth;
-const isLangPT = computed(() => mainStore.lang === 'pt');
+const isAuth = computed(() => authStore.auth);
 
-const menu = originalMenu.filter((item) => item.isAuth === undefined || item.isAuth === isAuth);
+const menu = computed(() => {
+    return originalMenu.filter((item) => item.isAuth === undefined || item.isAuth === isAuth.value);
+});
 
 const menuClick = (item) => {
     if (item.isToggleTheme) {
@@ -22,7 +23,7 @@ const menuClick = (item) => {
         mainStore.toggleLang();
     }
     if (item.isLogout) {
-        //
+        authStore.logout();
     }
 };
 </script>
@@ -37,7 +38,7 @@ const menuClick = (item) => {
                     :is="item.route ? RouterLink : item.href ? 'a' : 'button'"
                     :to="item.route"
                     :href="item.href ?? null"
-                    :title="isLangPT ? item.labelPT || item.hoverPT : item.label || item.hover"
+                    :title="mainStore.lang === 'pt' ? item.labelPT || item.hoverPT : item.label || item.hover"
                     class="flex items-center h-14 px-2 transition-all cursor-pointer hover:font-medium dark:hover:text-sky-500 hover:scale-105"
                     :target="item.href ? '_blank' : null"
                     :class="
@@ -49,7 +50,7 @@ const menuClick = (item) => {
                 >
                     <BaseIcon :path="item.icon" />
                     <span v-if="item.label" class="px-2 hidden md:inline-flex">{{
-                        isLangPT ? item.labelPT : item.label
+                        mainStore.lang === 'pt' ? item.labelPT : item.label
                     }}</span>
                 </component>
             </div>
