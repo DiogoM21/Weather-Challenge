@@ -1,6 +1,6 @@
-# ✒️ Glartek Challenge
+# ✒️ Weather Challenge
 
-Glartek Challenge FullStack ➔ LVL Junior
+Weather Challenge FullStack ➔ LVL Junior
 
 ## 📖 Notes:
 
