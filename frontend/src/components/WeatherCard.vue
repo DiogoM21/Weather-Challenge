@@ -190,7 +190,7 @@ function getIconWind(deg) {
                     :disabled="isRefreshing"
                     :label="mainStore.lang === 'pt' ? 'Unidade:' : 'Unit:'"
                     :icon="
-                        selectUnits.value
+                        selectUnits
                             ? selectUnits.find((unit) => unit.value === selectedUnit).icon
                             : mdiTemperatureCelsius
                     "

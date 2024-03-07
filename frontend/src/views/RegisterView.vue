@@ -133,7 +133,7 @@ onMounted(async () => {
                         id="unit"
                         v-model="form.unit"
                         :icon="
-                            selectUnits.value
+                            selectUnits
                                 ? selectUnits.find((unit) => unit.value === form.unit).icon
                                 : mdiTemperatureCelsius
                         "
