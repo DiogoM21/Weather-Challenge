@@ -11,7 +11,7 @@ const db = mysql.createConnection({
     host: 'db',
     user: 'admin',
     password: 'root',
-    database: 'glartek-challenge',
+    database: 'weather-challenge',
 });
 
 // Function to connect to database

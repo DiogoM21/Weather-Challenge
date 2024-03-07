@@ -4,11 +4,11 @@ services:
     image: mariadb
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: glartek-challenge
+      MYSQL_DATABASE: weather-challenge
       MYSQL_USER: admin
       MYSQL_PASSWORD: root
     volumes:
-      - "./others/glartek-challenge.sql:/docker-entrypoint-initdb.d/glartek-challenge.sql"
+      - "./others/weather-challenge.sql:/docker-entrypoint-initdb.d/weather-challenge.sql"
 
   # PhpMyAdmin (PhpMyAdmin)
   phpmyadmin:
