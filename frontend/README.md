@@ -1,23 +1,29 @@
-# ✒️ Weather Challenge
+# 🚀 Weather Challenge
+
+## 📖 Project Overview
 
 Weather Challenge FullStack ➔ LVL Junior
 
+-   Front-End with **Vue.js** (Dashboard) with weather information.
+
 ## ⚒️ Installation:
 
-1. npm install ➔ Install packages.
+1. Run `npm install` ➔ In frontend root path to install packages.
+2. Run `npm run build` ➔ Compiles for production.
 
-2. npm run build ➔ Compiles for production.
+## 🖥️ Other Commands:
 
-## 📖 Other Commands:
+-   Lint and format code ➔ `npm run lint` or `npx eslint . --fix`
+-   Compiles for development ➔ `npm run serve`
 
-1. npm run lint or npx eslint . --fix ➔ Lint and format code.
+## 🌐 URLs:
 
-2. npm run serve ➔ Compiles for development.
+1. Front-End ➔ [http://localhost:8080/](http://localhost:8080/)
 
-## 🧑 Participants:
-* Diogo Mendes ➔ diiogomendes21@hotmail.com
+## 👥 Participants:
 
-## 🔧 Info:
-© Diogo Mendes ➔ 2024
+-   **Diogo Mendes** ➔ [diiogomendes21@hotmail.com](mailto:diiogomendes21@hotmail.com)
 
-Node.js & Vue.js
+## 📅 Info:
+
+© 2024 Diogo Mendes | Vue.js

@@ -1,21 +1,28 @@
-# ✒️ Weather Challenge
+# 🚀 Weather Challenge
+
+## 📖 Project Overview
 
 Weather Challenge FullStack ➔ LVL Junior
 
+-   Back-End with **Node.js** (API REST) to consult city weather [external API](https://openweathermap.org/).
+
 ## ⚒️ Installation:
 
-1. npm install ➔ Install packages.
+1. Run `npm install` ➔ In backend root path to install packages.
 
-## 📖 Other Commands:
+## 🖥️ Other Commands:
 
-1. npx eslint . --fix ➔ Lint and format code.
+-   Lint and format code ➔ `npx eslint . --fix`
+-   Start server ➔ `node .`
 
-2. node . ➔ Start server.
+## 🌐 URLs:
 
-## 🧑 Participants:
-* Diogo Mendes ➔ diiogomendes21@hotmail.com
+1. Back-End ➔ [http://localhost:3000/](http://localhost:3000/)
 
-## 🔧 Info:
-© Diogo Mendes ➔ 2024
+## 👥 Participants:
 
-Node.js & Vue.js
+-   **Diogo Mendes** ➔ [diiogomendes21@hotmail.com](mailto:diiogomendes21@hotmail.com)
+
+## 📅 Info:
+
+© 2024 Diogo Mendes | Node.js

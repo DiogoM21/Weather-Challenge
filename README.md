@@ -1,41 +1,33 @@
-# ✒️ Weather Challenge
+# 🚀 Weather Challenge
+
+## 📖 Project Overview
 
 Weather Challenge FullStack ➔ LVL Junior
 
-## 📖 Notes:
+- Back-End with **Node.js** (API REST) to consult city weather [external API](https://openweathermap.org/).
+- Front-End with **Vue.js** (Dashboard) with weather information.
 
-1. Back-End with Node.js (API REST) to consult city weather [external API](https://openweathermap.org/).
+## 📋 Requirements:
 
-2. Front-End with Vue.js (Dashboard) with weather information.
+- Docker
+- Setup **Back-End** ➔ Check the [README](./backend/README.md) file.
+- Setup **Front-End** ➔ Check the [README](./frontend/README.md) file.
 
-## 📝 Requirements:
+## 🛠️ Installation:
 
-1. Docker
-
-2. Setup Back-End ➔ Check the [README](./backend/README.md) file.
-
-3. Setup Front-End ➔ Check the [README](./frontend/README.md) file.
-
-## ⚙️ Execution:
-
-1. docker-compose up -d ➔ In root path.
-
+1. Run `docker-compose up -d` ➔ In project root path.
 2. Starts ➔ Database, phpMyAdmin, Back-End and Front-End.
 
-## 📡 URLs:
+## 🌐 URLs:
 
-1. Front-End ➔ http://localhost:8080/
+1. Front-End ➔ [http://localhost:8080/](http://localhost:8080/)
+2. Back-End ➔ [http://localhost:3000/](http://localhost:3000/)
+3. phpMyAdmin (credentials: admin / root) ➔ [http://localhost:8081/](http://localhost:8081/)
 
-2. Back-End ➔ http://localhost:3000/
+## 👥 Participants:
 
-3. phpMyAdmin (credentials: admin / root) ➔ http://localhost:8081/
+- **Diogo Mendes** ➔ [diiogomendes21@hotmail.com](mailto:diiogomendes21@hotmail.com)
 
-## 🧑 Participants:
+## 📅 Info:
 
-- Diogo Mendes ➔ diiogomendes21@hotmail.com
-
-## 🔧 Info:
-
-© Diogo Mendes ➔ 2024
-
-Node.js & Vue.js
+© 2024 Diogo Mendes | Node.js & Vue.js
