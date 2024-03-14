@@ -10,7 +10,7 @@ Weather Challenge FullStack ➔ LVL Junior
 
 1. npx eslint . --fix ➔ Lint and format code.
 
-2. node src/server.js ➔ Start server.
+2. node . ➔ Start server.
 
 ## 🧑 Participants:
 * Diogo Mendes ➔ diiogomendes21@hotmail.com

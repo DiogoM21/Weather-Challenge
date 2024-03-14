@@ -26,7 +26,7 @@ services:
     ports:
       - "3000:3000"
     working_dir: /home/node/app
-    command: "node src/server.js"
+    command: "node ."
     depends_on:
       - db
       - frontend
